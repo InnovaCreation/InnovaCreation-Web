@@ -1,3 +1,4 @@
+setInterval(GetPageScroll,50);
 function GetPageScroll() 
 { 
     var x, y; 
@@ -15,15 +16,15 @@ function GetPageScroll()
         x = document.body.scrollLeft;   
     } 
  
-    if(y>=700)
+    if(y>=200)
     {
 
-        document.getElementById("nav").className = "ic-nav-down";
+        document.getElementById("nav").className = "dw-nav1";
         //id输入替换nav
     }
     else
     {
-        document.getElementById("nav").className = "ic-nav-up";
+        document.getElementById("nav").className = "dw-nav2";
         //id输入替换nav
     }
 }
