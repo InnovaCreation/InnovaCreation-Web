@@ -19,12 +19,12 @@ function GetPageScroll()
     if(y>=200)
     {
 
-        document.getElementById("nav").className = "dw-nav1";
+        document.getElementById("nav").className = "ic-nav-down";
         //id输入替换nav
     }
     else
     {
-        document.getElementById("nav").className = "dw-nav2";
+        document.getElementById("nav").className = "ic-nav-up";
         //id输入替换nav
     }
 }
