@@ -16,7 +16,7 @@ function GetPageScroll()
         x = document.body.scrollLeft;   
     } 
  
-    if(y>=200)
+    if(y>=500)
     {
 
         document.getElementById("nav").className = "ic-nav-down";
