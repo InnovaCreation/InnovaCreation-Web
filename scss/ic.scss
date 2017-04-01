@@ -12,6 +12,7 @@ body {
   font-family: 'Lato', Helvetica, "Microsoft YaHei", sans-serif;
   font-weight: 14px; }
 
+// 字体大小重置
 h1 {
   font-size: 28px; }
 
@@ -51,6 +52,7 @@ a {
     }
   }
 
+// 背景大图两张的地址
 .ic-bg {
   background: url(https://ooo.0o0.ooo/2017/03/31/58de570785d4a.png) center bottom, 
   url(https://ooo.0o0.ooo/2017/03/31/58de5696d93a8.jpg) center no-repeat fixed;
@@ -59,6 +61,7 @@ a {
   height: 100vh;
   max-height: 700px; }
 
+// 导航栏样式
 .ic-nav {
   transition: transform 1s ease-in;
   transform:translate(0,-67px);
@@ -193,6 +196,7 @@ a {
   background: #FFEB3B;
 }
 
+// 媒体查询元素
 @media (min-width: 73em) {
   .ic-f {
     max-width: 1100px; } }
