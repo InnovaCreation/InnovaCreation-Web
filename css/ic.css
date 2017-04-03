@@ -92,7 +92,7 @@ a {
 
 .ic-menu li :hover {
   border-bottom: 2px solid #ef5350;
-  transition: opacity 0.2s;
+  transition: 0.2s;
   opacity: 0.7; }
 
 .ic-menu li a {
@@ -169,6 +169,10 @@ a {
 .ic-f {
   width: 80%;
   margin: 0 auto; }
+
+.ic-img :hover {
+  opacity: 0.7;
+  transition: 0.2s; }
 
 .ic-footer {
   background: #fafafa;
