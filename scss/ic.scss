@@ -71,6 +71,7 @@ a {
   top: -67;
   margin: $center-size;
   box-shadow: 0 0 9px #eee;
+  z-index: 100;
    }
 .ic-nav-down {
   transition: transform 0.7s ease-in;
@@ -80,7 +81,8 @@ a {
   top: -67px;
   position: fixed;
   margin: 0 auto;
-  box-shadow: 0 0 9px #eee; }
+  box-shadow: 0 0 9px #eee; 
+  z-index: 100;}
 
 .ic-nav-up {
   transition: transform 0.7s ease-in;
@@ -90,7 +92,8 @@ a {
   position: fixed;
   top: -67px;
   margin: 0 auto;
-  box-shadow: 0 0 9px #eee; }
+  box-shadow: 0 0 9px #eee; 
+  z-index: 100;}
 
 .main-menu {
   max-width:1100px;
