@@ -5,6 +5,7 @@ $link-color: #ef5350;
 $footer-color: #fafafa;
 
 $center-size: 0 auto;
+$ic-main-size: 9rem;
 
 body {
   background: $bg-color;
@@ -196,6 +197,18 @@ a {
     transition: 0.2s;
   }
 }
+.ic-password {
+  background: rgba(255, 255, 255, 0.3%);
+  border: 1px solid #ccc;
+  border-radius: 4px;
+  width: 140px;
+}
+
+.ic-app {
+  background: url(../images/photo/ic-main.png) center fixed;
+  padding: $ic-main-size;
+  margin: 5rem 0.3rem;
+}
 
 .ic-footer {
   background: $footer-color;
@@ -207,10 +220,11 @@ a {
 }
 
 // 媒体查询元素
+// Desktop
 @media (min-width: 73em) {
   .ic-f {
     max-width: 1100px; } }
-
+// 平板媒体查询
 @media (max-width: 73em) {
   .ic-f {
     width: 90%;
@@ -221,7 +235,7 @@ a {
     width: 30.7%; } 
   .header-title {
     margin: -11rem -6rem; }}
-
+// 手机媒体查询
 @media (max-width: 45em) {
   .ic-f {
     width: 80%; }
