@@ -1,43 +1,50 @@
+var $i = 0;
 function slide()
 {
-    document.getElementById("navpe").className="ic-nav-pe-down";
-    var cover = document.getElementById("cover");
-    var bgalpha = 0;
-    var target = 30;
-    var timer = setInterval(function()
-    {
-        if(bgalpha<target)
+    if($i == 0){
+        document.getElementById("navpe").className="ic-nav-pe-down";
+        var cover = document.getElementById("cover");
+        var bgalpha = 0;
+        var target = 30;
+        var timer = setInterval(function()
         {
-            bgalpha = bgalpha + 1;
-            cover.style.visibility = "visible";
-            cover.style.filter = 'alpha(opacity='+bgalpha+')';//IE核
-            cover.style.opacity = bgalpha/100;//非IE核
-        }
-        else
-        {
-            clearInterval(timer);
-        }
-    },30)
+            if(bgalpha<target)
+            {
+                bgalpha = bgalpha + 1;
+                cover.style.visibility = "visible";
+                cover.style.filter = 'alpha(opacity='+bgalpha+')';//IE核
+                cover.style.opacity = bgalpha/100;//非IE核
+            }
+            else
+            {
+                clearInterval(timer);
+                $i = 1;
+            }
+        },30)
+    }
 }
 
 function clearslide()
 {
-    document.getElementById("navpe").className="ic-nav-pe-up";
-    var cover = document.getElementById("cover");
-    var bgalpha = 30;
-    var target = 0;
-    var timer2 =setInterval(function()
-    {
-        if(bgalpha>target)
+    if($i == 1){
+        $i = 0;
+        document.getElementById("navpe").className="ic-nav-pe-up";
+        var cover = document.getElementById("cover");
+        var bgalpha = 30;
+        var target = 0;
+        var timer2 =setInterval(function()
         {
-            bgalpha = bgalpha - 1;
-            cover.style.filter = 'alpha(opacity='+bgalpha+')';//IE核
-            cover.style.opacity = bgalpha/100;//非IE核
-        }
-        else
-        {
-            cover.style.visibility = "hidden";
-            clearInterval(timer2);
-        }
-    },30)
+            if(bgalpha>target)
+            {
+                bgalpha = bgalpha - 1;
+                cover.style.filter = 'alpha(opacity='+bgalpha+')';//IE核
+                cover.style.opacity = bgalpha/100;//非IE核
+            }
+            else
+            {
+                cover.style.visibility = "hidden";
+                clearInterval(timer2);
+            }
+        },30)
+    }
 }
