@@ -19,14 +19,33 @@
         <!-- Javascript -->
         <script src="js/smoothscroll.js"></script>
         <script src="js/nav-effect.js"></script>
+        <script src="js/nav-mov-pe.js"></script>
     </head>
     <body>
         <header class="ic-bg">
+        <div class="cover" id="cover" onclick="clearslide()"></div>
+            <!-- 手机导航栏开始 -->
+            <nav class="ic-nav-pe-up" id="navpe">
+                <div class="main-menu-pe">
+                    <ul class="ic-menu-pe">
+                        <li><a href="index.html">首页</a></li>
+                        <li><a href="works.html">作品</a></li>
+                        <li><a href="https://innovacreation.qionouu.cn/">博客</a></li>
+                        <li><a href="https://innovabbs.qionouu.cn/">论坛</a></li>
+                        <li><a href="#app">客户端</a></li>
+                        <li><a href="https://innovabbs.qionouu.cn/t/innovacreation-wiki/41">Wiki</a></li>
+                        <div class="division-line"></div>
+                        <li><a href="https://twitter.com/mc_dragonwork" target="view_window"><div class="ion-social-twitter"></div></a></li>
+                    </ul>
+                </div>
+            </nav>
+            <!-- 手机导航栏结束 -->
             <!-- 导航栏开始 -->
             <nav class="ic-nav" id="nav">
                 <div class="main-menu">
                     <li class="ic-logo"><a href="index.html"><img src="images/logo.svg" title="Innova Creation" alt="新式创筑" width="50px" height="50px"></a></li>
                     <ul class="ic-menu">
+                        <div class="menu-iv">
                         <li><a href="index.html">首页</a></li>
                         <li><a href="works.html">作品</a></li>
                         <li><a href="https://innovacreation.qionouu.cn/">博客</a></li>
@@ -34,6 +53,8 @@
                         <li><a href="#app">客户端</a></li>
                         <li><a href="https://innovabbs.qionouu.cn/t/innovacreation-wiki/41">Wiki</a></li>
                         <li><a href="https://twitter.com/mc_dragonwork" target="view_window"><div class="ion-social-twitter"></div></a></li>
+                        </div>
+                        <i class="ion-android-menu" onclick="slide()"></i>
                     </ul>
                 </div>
             </nav>
