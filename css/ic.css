@@ -37,9 +37,10 @@ ul, li {
 a {
   text-decoration: none;
   color: #222; }
-  a :hover {
-    color: #ef5350;
-    transition: 0.2s; }
+
+a :hover {
+  color: #ef5350;
+  transition: 0.2s; }
 
 .ic-bg {
   background: url(https://ooo.0o0.ooo/2017/04/02/58e0b2058e1f6.png) center bottom, url(https://ooo.0o0.ooo/2017/04/02/58e0b1e207cbf.png) center no-repeat fixed;
@@ -114,15 +115,17 @@ a {
   width: 200px;
   padding: 0rem; }
 
-.ic-menu-pe li {
+.ic-menu-pe
+li {
   display: table;
-  padding: 6em; }
+  padding: 1em 3em; }
 
-.ic-menu-pe li a {
+.ic-menu-pe
+li a {
   color: #fafafa;
   font-size: 24px; }
 
-.cover{
+.cover {
   position: fixed;
   padding: 0;
   top: 0px;
@@ -131,7 +134,7 @@ a {
   height: 100%;
   z-index: 1000;
   visibility: hidden;
-  background-color: rgb(0,0,0);
+  background-color: black;
   opacity: 0;
   filter: alpha(opacity=0); }
 
@@ -164,14 +167,17 @@ a {
   color: white;
   width: 70%;
   max-width: 610px; }
-  .ic-title h1, .ic-title h2 {
-    color: white; }
-  .ic-title h1 {
-    font-size: 3.7rem;
-    font-family: 'Raleway', sans-serif;
-    font-weight: 500; }
-  .ic-title h2 {
-    line-height: 43px; }
+
+.ic-title h1, .ic-title h2 {
+  color: white; }
+
+.ic-title h1 {
+  font-size: 3.7rem;
+  font-family: 'Raleway', sans-serif;
+  font-weight: 500; }
+
+.ic-title h2 {
+  line-height: 43px; }
 
 .btn {
   background: transparent;
@@ -195,9 +201,10 @@ a {
   position: fixed;
   float: left;
   margin: -19rem -4rem; }
-  .header-title p {
-    text-transform: uppercase;
-    color: #222; }
+
+.header-title p {
+  text-transform: uppercase;
+  color: #222; }
 
 .card {
   line-height: 25px;
@@ -252,8 +259,8 @@ a {
 @media (min-width: 73em) {
   .ic-f {
     max-width: 1100px; }
-  .ion-android-menu{
-    display:none; } }
+  .ion-android-menu {
+    display: none; } }
 
 @media (max-width: 73em) {
   .ic-f {
@@ -265,7 +272,7 @@ a {
     width: 30.7%; }
   .header-title {
     margin: -11rem -6rem; }
-  .menu-iv{
+  .menu-iv {
     display: none; } }
 
 @media (max-width: 45em) {
@@ -275,13 +282,18 @@ a {
     font-size: 1.7rem; }
   .ic-title h2 {
     font-size: 1rem; }
+  .main-menu {
+    margin: 0 2em; }
+    .main-menu .ion-android-menu {
+      font-size: 33px; }
+  .ic-logo {
+    margin: 0.7em; }
   .card {
     padding: 0;
     background: transparent; }
   .m-f {
-    margin: 0.3em auto;
     width: 100%; }
   .header-title {
     display: none; }
-  .menu-iv{
+  .menu-iv {
     display: none; } }

@@ -1,19 +1,9 @@
-$main-color: #222;
-$bg-color: #fff;
-$nav-color: #fff;
-$link-color: #ef5350;
-$footer-color: #fafafa;
-
-$center-size: 0 auto;
-$ic-main-size: 9rem;
-
 body {
-  background: $bg-color;
+  background: #fff;
   font-size: 14px;
   font-family: 'Lato', Helvetica, "Microsoft YaHei", sans-serif;
   font-weight: 14px; }
 
-// 字体大小重置
 h1 {
   font-size: 28px; }
 
@@ -39,221 +29,335 @@ h1, h2, h3, h4, h5, h6, p, a, small, pre, code {
   font-weight: 14px; }
 
 p {
-  color: $main-color; }
-
-ul, li {
-  display: inline-block; }
-
-a {
-  text-decoration: none; 
-  color: $main-color;
-    :hover {
-      color: $link-color;
-      transition: 0.2s;
-    }
+  color: #222; 
   }
 
-// 背景大图两张的地址
+ul, li {
+  display: inline-block; 
+  }
+
+a {
+  text-decoration: none;
+  color: #222; 
+  }
+
+a :hover {
+  color: #ef5350;
+  transition: 0.2s; 
+  }
+
 .ic-bg {
-  background: url(https://ooo.0o0.ooo/2017/04/02/58e0b2058e1f6.png) center bottom, 
-  url(https://ooo.0o0.ooo/2017/04/02/58e0b1e207cbf.png) center no-repeat fixed;
+  background: url(https://ooo.0o0.ooo/2017/04/02/58e0b2058e1f6.png) center bottom, url(https://ooo.0o0.ooo/2017/04/02/58e0b1e207cbf.png) center no-repeat fixed;
   background-size: cover;
   width: 100%;
   height: 100vh;
-  max-height: 700px; }
+  max-height: 700px; 
+  }
 
-// 导航栏样式
 .ic-nav {
   transition: transform 1s ease-in;
-  transform:translate(0,-67px);
-  background: $nav-color;
+  transform: translate(0, -67px);
+  background: #fff;
   width: 100%;
   position: fixed;
   top: -67;
-  margin: $center-size;
+  margin: 0 auto;
   box-shadow: 0 0 9px #eee;
-  z-index: 100;
-   }
+  z-index: 100; 
+  }
+
+.ic-nav-pe-up {
+  transition: transform 0.4s ease-out;
+  transform: translate(-200px, 0);
+  background: #222;
+  width: 200px;
+  height: 100%;
+  position: fixed;
+  top: 0px;
+  z-index: 1000; 
+  }
+
+.ic-nav-pe-down {
+  transition: transform 0.4s ease-out;
+  transform: translate(0px, 0);
+  background: #222;
+  width: 200px;
+  height: 100%;
+  position: fixed;
+  top: 0px;
+  z-index: 1000; 
+  }
+
 .ic-nav-down {
   transition: transform 0.7s ease-in;
   transform: translate(0, 67px);
-  background: $nav-color;
+  background: #fff;
   width: 100%;
   top: -67px;
   position: fixed;
   margin: 0 auto;
-  box-shadow: 0 0 9px #eee; 
-  z-index: 100;}
+  box-shadow: 0 0 9px #eee;
+  z-index: 100; 
+  }
 
 .ic-nav-up {
   transition: transform 0.7s ease-in;
   transform: translate(0, -67px);
-  background: $nav-color;
+  background: #fff;
   width: 100%;
   position: fixed;
   top: -67px;
   margin: 0 auto;
-  box-shadow: 0 0 9px #eee; 
-  z-index: 100;}
+  box-shadow: 0 0 9px #eee;
+  z-index: 100; 
+  }
+
+.main-menu-pe {
+  max-width: 300px;
+  margin: 0 auto; 
+  }
 
 .main-menu {
-  max-width:1100px;
-  margin: $center-size;
+  max-width: 1100px;
+  margin: 0 auto;
   padding: 0.5em; 
-}
+  }
+
+.ic-menu-pe {
+  width: 200px;
+  padding: 0rem; 
+  }
+
+.ic-menu-pe 
+li {
+  display: table;
+  padding: 1em 3em; 
+  }
+
+.ic-menu-pe 
+li a {
+  color: #fafafa;
+  font-size: 24px; 
+  }
+
+.cover {
+  position: fixed;
+  padding: 0;
+  top: 0px;
+  left: 0px;
+  width: 100%;
+  height: 100%;
+  z-index: 1000;
+  visibility: hidden;
+  background-color: black;
+  opacity: 0;
+  filter: alpha(opacity=0); 
+  }
+
+.division-line {
+  border-bottom: 2px solid #666;
+  width: 80%;
+  margin: 20px auto; 
+  }
 
 .ic-menu {
   float: right;
-  padding: 0.2rem; }
+  padding: 0.2rem; 
+  }
 
 .ic-menu li {
-  margin-left: 20px; }
+  margin-left: 20px; 
+  }
 
 .ic-menu li :hover {
-  border-bottom: 2px solid $link-color;
+  border-bottom: 2px solid #ef5350;
   transition: 0.2s;
-  opacity: 0.7; }
+  opacity: 0.7; 
+  }
 
 .ic-menu li a {
-  color: $main-color; }
+  color: #222; 
+  }
 
 .center {
-  margin: $center-size;
-  text-align: center; }
+  margin: 0 auto;
+  text-align: center; 
+  }
 
 .ic-title {
   padding: 4rem 0;
   color: white;
   width: 70%;
-  max-width: 610px;
-  h1,h2 {
-    color: white;
+  max-width: 610px; 
   }
-  h1 {
+
+.ic-title h1, .ic-title h2 {
+  color: white; 
+  }
+
+.ic-title h1 {
   font-size: 3.7rem;
   font-family: 'Raleway', sans-serif;
-  font-weight: 500;}
-  h2 {
-  line-height: 43px;}}
+  font-weight: 500; 
+  }
+
+.ic-title h2 {
+  line-height: 43px; 
+  }
 
 .btn {
   background: transparent;
   line-height: 47px;
-  color: $link-color; }
+  color: #ef5350; 
+  }
 
 .btn:active, .btn:hover {
-  background: $link-color;
+  background: #ef5350;
   color: white;
-  transition: 0.2s; }
+  transition: 0.2s; 
+  }
 
 .btn-main {
   padding: 13px 30px;
-  border: 2px solid $link-color; }
+  border: 2px solid #ef5350; 
+  }
 
 .ic-f {
-  margin: $center-size; }
+  margin: 0 auto; 
+  }
 
 .header-title {
   transform: rotate(90deg);
   position: fixed;
   float: left;
   margin: -19rem -4rem; 
-  p {
-    text-transform: uppercase;
-    color: $main-color;
-  }}
+  }
+
+.header-title p {
+  text-transform: uppercase;
+  color: #222; 
+  }
 
 .card {
   line-height: 25px;
   padding: 2em;
-  margin: 0.3em; }
+  margin: 0.3em; 
+  }
 
 .card h1 {
-  line-height: 13px; }
+  line-height: 13px; 
+  }
 
 .text-line {
-  border-bottom: 2px solid $link-color;
+  border-bottom: 2px solid #ef5350;
   width: 30px;
-  margin-bottom: 2em; }
+  margin-bottom: 2em; 
+  }
 
 .card-2 {
   display: inline-block;
-  width: 43.4%; }
+  width: 43.4%; 
+  }
 
 .card-3 {
   display: inline-block;
-  width: 26.69%; }
+  width: 26.69%; 
+  }
 
 .row {
-  margin: 5rem auto; }
+  margin: 5rem auto; 
+  }
 
 .ic-f {
   width: 80%;
-  margin: $center-size; }
-
-.ic-img {
-  :hover {
-    opacity: 0.7;
-    transition: 0.2s;
+  margin: 0 auto; 
   }
-}
+
+.ic-img :hover {
+  opacity: 0.7;
+  transition: 0.2s; 
+  }
+
 .ic-password {
-  background: rgba(255, 255, 255, 0.3%);
+  background: rgba(255, 255, 255, 0.3);
   border: 1px solid #ccc;
   border-radius: 4px;
-  width: 140px;
-}
+  width: 140px; 
+  }
 
 .ic-app {
   background: url(../images/photo/ic-main.png) center fixed;
-  padding: $ic-main-size;
-  margin: 5rem 0.3rem;
-}
+  padding: 9rem;
+  margin: 5rem 0.3rem; 
+  }
 
 .ic-footer {
-  background: $footer-color;
-  padding: 3em 0;
-}
+  background: #fafafa;
+  padding: 3em 0; 
+  }
 
 .ic-join {
-  background: #FFEB3B;
-}
+  background: #FFEB3B; 
+  }
 
-// 媒体查询元素
-// Desktop
 @media (min-width: 73em) {
   .ic-f {
-    max-width: 1100px; } }
-// 平板媒体查询
+    max-width: 1100px; 
+    }
+  .ion-android-menu {
+    display: none; 
+    } 
+    }
+
 @media (max-width: 73em) {
   .ic-f {
     width: 90%;
-    max-width: 690px; }
+    max-width: 690px; 
+    }
   .card-2 {
     width: 40.4%; }
+
   .card-3 {
-    width: 30.7%; } 
+    width: 30.7%; 
+    }
   .header-title {
-    margin: -11rem -6rem; }}
-// 手机媒体查询
+    margin: -11rem -6rem; 
+    }
+  .menu-iv {
+    display: none; 
+    } 
+    }
+
 @media (max-width: 45em) {
   .ic-f {
-    width: 80%; }
-  .ic-title {
-    h1 {
-      font-size: 1.7rem;
+    width: 80%; 
     }
-    h2 {
-      font-size: 1rem;
+  .ic-title h1 {
+    font-size: 1.7rem; 
     }
-  }
+  .ic-title h2 {
+    font-size: 1rem; 
+    }
+    .main-menu {
+    margin: 0 2em;
+    .ion-android-menu {
+      font-size: 33px; 
+    }
+    }
+    .ic-logo {
+    margin: 0.7em;
+    }
   .card {
     padding: 0;
-    background: transparent; }
+    background: transparent; 
+    }
   .m-f {
-    margin: 0.3em auto;
-    width: 100%; }
+    width: 100%; 
+    }
   .header-title {
-    display: none;
-  }
-}
+    display: none; 
+    }
+  .menu-iv {
+    display: none; 
+    } 
+    }
