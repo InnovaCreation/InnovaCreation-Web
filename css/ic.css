@@ -49,17 +49,6 @@ a :hover {
   height: 100vh;
   max-height: 700px; }
 
-.ic-nav {
-  transition: transform 1s ease-in;
-  transform: translate(0, -67px);
-  background: #fff;
-  width: 100%;
-  position: fixed;
-  top: -67;
-  margin: 0 auto;
-  box-shadow: 0 0 9px #eee;
-  z-index: 100; }
-
 .ic-nav-pe-up {
   transition: transform 0.4s ease-out;
   transform: translate(-200px, 0);
@@ -81,25 +70,21 @@ a :hover {
   z-index: 1000; }
 
 .ic-nav-down {
-  transition: transform 0.7s ease-in;
-  transform: translate(0, 67px);
+  transition: 0.3s;
   background: #fff;
   width: 100%;
-  top: -67px;
+  top: 0px;
   position: fixed;
   margin: 0 auto;
-  box-shadow: 0 0 9px #eee;
   z-index: 100; }
 
 .ic-nav-up {
-  transition: transform 0.7s ease-in;
-  transform: translate(0, -67px);
-  background: #fff;
+  transition: 0.3s;
+  background: transparent;
   width: 100%;
   position: fixed;
-  top: -67px;
+  top: 0px;
   margin: 0 auto;
-  box-shadow: 0 0 9px #eee;
   z-index: 100; }
 
 .main-menu-pe {

@@ -1,5 +1,4 @@
-setInterval(GetPageScroll,50);
-function GetPageScroll() 
+window.onscroll = function() 
 { 
     var x, y; 
     if(window.pageYOffset) 
@@ -16,7 +15,7 @@ function GetPageScroll()
         x = document.body.scrollLeft;   
     } 
  
-    if(y>=500)
+    if(y>=100)
     {
 
         document.getElementById("nav").className = "ic-nav-down";
