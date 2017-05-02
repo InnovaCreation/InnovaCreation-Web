@@ -109,7 +109,7 @@ li {
 .ic-menu-pe
 li a {
   color: #fafafa;
-  font-size: 24px; }
+  font-size: 20px; }
 
 .cover {
   position: fixed;
@@ -186,6 +186,10 @@ li a {
 .ic-f {
   margin: 0 auto; }
 
+ .ic-logo-header {
+    margin: 2em 0;
+  }
+
 .header-title {
   transform: rotate(90deg);
   position: fixed;
@@ -246,13 +250,13 @@ li a {
 .ic-join {
   background: #FFEB3B; }
 
-@media (min-width: 85em) {
+@media (min-width: 79.6em) {
   .ic-f {
     max-width: 1100px; }
   .ion-android-menu {
     display: none; } }
 
-@media (max-width: 85em) {
+@media (max-width: 79.6em) {
   .ic-f {
     width: 90%;
     max-width: 690px; }
@@ -260,8 +264,6 @@ li a {
     width: 40.4%; }
   .card-3 {
     width: 30.7%; }
-  .main-menu {
-    margin: 0 3em; }
     .main-menu .ion-android-menu {
       font-size: 18px; }
   .header-title {
@@ -276,10 +278,8 @@ li a {
     font-size: 1.7rem; }
   .ic-title h2 {
     font-size: 1rem; }
-  .main-menu {
-    margin: 0 2em; }
     .main-menu .ion-android-menu {
-      font-size: 33px; }
+      font-size: 30px; }
   .ic-logo {
     margin: 0.7em; }
   .card {
