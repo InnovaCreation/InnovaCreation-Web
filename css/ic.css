@@ -246,13 +246,13 @@ li a {
 .ic-join {
   background: #FFEB3B; }
 
-@media (min-width: 70em) {
+@media (min-width: 85em) {
   .ic-f {
     max-width: 1100px; }
   .ion-android-menu {
     display: none; } }
 
-@media (max-width: 70em) {
+@media (max-width: 85em) {
   .ic-f {
     width: 90%;
     max-width: 690px; }
