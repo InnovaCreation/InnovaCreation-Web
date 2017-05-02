@@ -46,7 +46,7 @@ a :hover {
   background: url(https://ooo.0o0.ooo/2017/04/02/58e0b2058e1f6.png) center bottom, url(https://ooo.0o0.ooo/2017/04/02/58e0b1e207cbf.png) center no-repeat fixed;
   background-size: cover;
   width: 100%;
-  height: 100vh;
+  height: 98vh;
   max-height: 700px; }
 
 .ic-nav-pe-up {
@@ -74,6 +74,7 @@ a :hover {
   background: #fff;
   width: 100%;
   top: 0px;
+  box-shadow: 0 2px 8px RGBA(0, 0, 0, .05);
   position: fixed;
   margin: 0 auto;
   z-index: 100; }
@@ -92,9 +93,9 @@ a :hover {
   margin: 0 auto; }
 
 .main-menu {
-  max-width: 1100px;
+  max-width: 1600px;
   margin: 0 auto;
-  padding: 0.5em; }
+  padding: 0.7em 3em; }
 
 .ic-menu-pe {
   width: 200px;
@@ -130,7 +131,8 @@ li a {
 
 .ic-menu {
   float: right;
-  padding: 0.2rem; }
+  padding-top: 0.2em;
+  }
 
 .ic-menu li {
   margin-left: 20px; }
@@ -139,9 +141,12 @@ li a {
   border-bottom: 2px solid #ef5350;
   transition: 0.2s;
   opacity: 0.7; }
-
+  
 .ic-menu li a {
   color: #222; }
+
+.ic-nav-up .ic-menu li a {
+  color: white; }
 
 .center {
   margin: 0 auto;
@@ -185,7 +190,7 @@ li a {
   transform: rotate(90deg);
   position: fixed;
   float: left;
-  margin: -19rem -4rem; }
+  margin: -20rem -4rem; }
 
 .header-title p {
   text-transform: uppercase;
@@ -241,13 +246,13 @@ li a {
 .ic-join {
   background: #FFEB3B; }
 
-@media (min-width: 73em) {
+@media (min-width: 70em) {
   .ic-f {
     max-width: 1100px; }
   .ion-android-menu {
     display: none; } }
 
-@media (max-width: 73em) {
+@media (max-width: 70em) {
   .ic-f {
     width: 90%;
     max-width: 690px; }
@@ -260,7 +265,7 @@ li a {
     .main-menu .ion-android-menu {
       font-size: 18px; }
   .header-title {
-    margin: -11rem -6rem; }
+    display: none }
   .menu-iv {
     display: none; } }
 
