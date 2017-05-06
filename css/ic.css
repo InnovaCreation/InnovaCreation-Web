@@ -294,6 +294,9 @@ li a {
   .card {
     padding: 0;
     background: transparent; }
+  .ic-skins {
+    display: none;
+}
   .m-f {
     width: 100%; }
   .header-title {
