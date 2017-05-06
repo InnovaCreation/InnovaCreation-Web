@@ -277,6 +277,9 @@ li a {
       font-size: 18px; }
   .header-title {
     display: none }
+    .ic-skins {
+    display: none;
+    }
   .menu-iv {
     display: none; } }
 
