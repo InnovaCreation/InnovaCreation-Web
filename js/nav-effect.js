@@ -17,13 +17,14 @@ window.onscroll = function()
  
     if(y>=100)
     {
-
         document.getElementById("nav").className = "ic-nav-down";
+        document.getElementById("pe-button").style.color = "black";
         //id输入替换nav
     }
     else
     {
         document.getElementById("nav").className = "ic-nav-up";
+        document.getElementById("pe-button").style.color = "white";
         //id输入替换nav
     }
 }
