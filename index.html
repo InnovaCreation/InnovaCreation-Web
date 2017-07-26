@@ -20,6 +20,7 @@
         <script src="js/smoothscroll.js?v=20170421"></script>
         <script src="js/nav-effect.js?v=20170421"></script>
         <script src="js/nav-mov-pe.js?v=20170421"></script>
+        <script src="js/move-effect.js?v=20170421"></script>
     </head>
     <body>
         <header class="ic-bg">
@@ -41,7 +42,7 @@
             </nav>
             <!-- 手机导航栏结束 -->
             <!-- 导航栏开始 -->
-            <nav class="ic-nav-up" id="nav">
+            <nav class="ic-nav-thick" id="nav">
                 <div class="main-menu">
                     <li class="ic-logo"><a href="index.html"><img src="images/logo.svg" title="Innova Creation" alt="新式创筑" width="50px" height="50px"></a></li>
                     <ul class="ic-menu">
@@ -54,17 +55,16 @@
                         <li><a href="https://forum.innovacreation.studio/t/innovacreation-wiki/41">Wiki</a></li>
                         <li><a href="https://twitter.com/mc_dragonwork" target="view_window"><div class="ion-social-twitter"></div></a></li>
                         </div>
-                        <i class="ion-android-menu" id="pe-button" onclick="slide()"></i>
+                        <i class="ion-android-menu" onclick="slide()"></i>
                     </ul>
                 </div>
             </nav>
             <!-- 导航栏结束 -->
             <div class="ic">
                 <div class="ic-title center">
-                    <div class="ic-logo-header"><a href="index.html"><img src="images/logo.svg" title="Innova Creation" alt="新式创筑" width="180px" height="180px"></div>
                     <h1>Innova Creation</h1>
                     <h2>在 Minecraft 中体验生活艺术之美，我们专注于细节和创造</h2>
-                    <p><a href="https://innovacreation.studio/forum" class="btn btn-main">开始旅途</a></p>
+                    <div class="ion-ios-arrow-down" onclick="Pagemove(380)"></div>
                 </div>
             </div>
             <div class="header-title">

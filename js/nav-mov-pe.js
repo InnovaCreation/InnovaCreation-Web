@@ -12,8 +12,8 @@ function slide()
             {
                 bgalpha = bgalpha + 1;
                 cover.style.visibility = "visible";
-                cover.style.filter = 'alpha(opacity='+bgalpha+')';//IE核
-                cover.style.opacity = bgalpha/100;//非IE核
+                cover.style.filter = 'alpha(opacity='+bgalpha+')';
+                cover.style.opacity = bgalpha/100;
             }
             else
             {
@@ -37,8 +37,8 @@ function clearslide()
             if(bgalpha>target)
             {
                 bgalpha = bgalpha - 1;
-                cover.style.filter = 'alpha(opacity='+bgalpha+')';//IE核
-                cover.style.opacity = bgalpha/100;//非IE核
+                cover.style.filter = 'alpha(opacity='+bgalpha+')';
+                cover.style.opacity = bgalpha/100;
             }
             else
             {
