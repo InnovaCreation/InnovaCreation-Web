@@ -1,13 +1,13 @@
 var $or = true;
-function Pagemove(i) 
+function Pagemove(sp) 
 {
     if($or == true)
     {
+        var i = document.getElementById(sp).offsetTop-document.getElementById("nav").offsetHeight;
         $or = false
         $velocity = 1.5;//初速度，单位为像素/10毫秒
         $af = 11.5;//加速度系数
         /*↑可设置变量*/
-        i = i * document.body.clientHeight/1080;
         $x=0;
         var y;
         if(window.pageYOffset)
@@ -20,7 +20,7 @@ function Pagemove(i)
         }
         else if(document.body)
         {
-            y = document.body.scrollTop;    
+            y = document.body.scrollTop;
         }
         $timer = setInterval(function(){
             var z;

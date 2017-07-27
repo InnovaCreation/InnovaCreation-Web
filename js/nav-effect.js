@@ -11,11 +11,10 @@ window.onscroll = function()
         x = document.documentElement.scrollLeft; 
     } else if(document.body) 
     {
-        y = document.body.scrollTop;    
+        y = document.body.scrollTop;
         x = document.body.scrollLeft;   
     } 
- 
-    if(y>=700)
+    if(y>=500)
     {
         document.getElementById("nav").className = "ic-nav-thin"
     }
