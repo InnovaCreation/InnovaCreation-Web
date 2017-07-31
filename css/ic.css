@@ -304,7 +304,11 @@ li a {
     display: none; } }
 
 @media (max-width: 45em) {
-
+  .ic-nav-thick {
+    padding: 0.1em 0; }
+  .ic-nav-thin {
+    margin-top: -1em;
+    padding-bottom: 1em; }
   .ic-f {
     width: 80%; }
   .ic-title h1 {
