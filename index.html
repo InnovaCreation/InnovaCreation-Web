@@ -2,153 +2,94 @@
 <html lang="zh-cmn-Hans">
 
 <head>
-    <title>Innova Creation - 新式创筑官网</title>
-    <meta charset="utf-8">
-    <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <meta name="theme-color" content="#ef5350">
+
+    <title>InnovaCreation - 新式创筑官方网站</title>
+    <link rel="stylesheet" href="dist/css/uikit.min.css" />
+    <link rel="stylesheet" href="dist/css/ic.css" />
+    <script src="dist/js/jquery.min.js"></script>
+    <script src="dist/js/uikit.min.js"></script>
+    <script src="dist/js/uikit-icons.min.js"></script>
+
     <!-- SEO -->
     <meta http-equiv="Cache-Control" content="no-siteapp" />
     <meta name="keywords" content="innovacreation design minecraft">
     <meta name="description" content="InnovaCreation 新式创筑是一个集网站、服务器、建筑于一体的Minecraft团队">
     <link rel="shortcut icon" type="image/ico" href="favicon.ico" />
-    <!-- stylesheet -->
-    <link href="https://fonts.googleapis.com/css?family=Lato|Raleway:400,500" rel="stylesheet">
-    <link rel="stylesheet" href="css/normalize.css">
-    <link rel="stylesheet" href="css/ic.css?v=20170503">
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/ionicons/2.0.1/css/ionicons.min.css">
-    <!-- Javascript -->
-    <script src="js/smoothscroll.js?v=20170421"></script>
-    <script src="js/nav-effect.js?v=20170421"></script>
-    <script src="js/nav-mov-pe.js?v=20170421"></script>
-    <script src="js/move-effect.js?v=20170421"></script>
+
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="theme-color" content="#ef5350">
 </head>
 
 <body>
-    <header class="ic-bg">
-        <div class="ic-bg-z">
-            <div class="cover" id="cover" onclick="clearslide()"></div>
-            <!-- 手机导航栏开始 -->
-            <nav class="ic-nav-pe-up" id="navpe">
-                <div class="main-menu-pe">
-                    <ul class="ic-menu-pe">
-                        <li><a href="index.html">首页</a></li>
-                        <li><a href="#works">作品</a></li>
-                        <li><a href="https://innovacreation.studio/forum">论坛</a></li>
-                        <li><a href="https://innovacreation.studio/news/">动态</a></li>
-                        <li><a href="#app">客户端</a></li>
-                        <li><a href="https://forum.innovacreation.studio/t/innovacreation-wiki/41">Wiki</a></li>
-                        <div class="division-line"></div>
-                        <li>
-                            <a href="https://twitter.com/mc_dragonwork" target="view_window">
-                                <div class="ion-social-twitter"></div>
-                            </a>
-                        </li>
-                    </ul>
-                </div>
-            </nav>
-            <!-- 手机导航栏结束 -->
-            <!-- 导航栏开始 -->
-            <nav class="ic-nav-thick" id="nav">
-                <div class="main-menu">
-                    <li class="ic-logo"><a href="index.html"><img src="images/logo.svg" title="Innova Creation" alt="新式创筑" width="50px" height="50px"></a></li>
-                    <ul class="ic-menu">
-                        <div class="menu-iv">
-                            <li><a href="index.html">首页</a></li>
-                            <li><a href="#works">作品</a></li>
-                            <li><a href="https://innovacreation.studio/forum">论坛</a></li>
-                            <li><a href="https://innovacreation.studio/news/">动态</a></li>
-                            <li><a href="#app">客户端</a></li>
-                            <li><a href="https://forum.innovacreation.studio/t/innovacreation-wiki/41">Wiki</a></li>
-                            <li>
-                                <a href="https://twitter.com/mc_dragonwork" target="view_window">
-                                    <div class="ion-social-twitter"></div>
-                                </a>
-                            </li>
-                        </div>
-                        <i class="ion-android-menu" onclick="slide()"></i>
-                    </ul>
-                </div>
-            </nav>
-            <!-- 导航栏结束 -->
-            <div class="ic">
-                <div class="ic-title center">
-                    <h1>Innova Creation</h1>
-                    <h2 id="timer">在 Minecraft 中体验生活艺术之美，我们专注于细节和创造</h2>
-                    <div class="ion-ios-arrow-down" onclick='Pagemove("sp1")'></div>
-                </div>
+    <div class="uk-background-cover ic-head-bg uk-panel uk-flex uk-flex-middle" style="background-image: url(https://i.loli.net/2017/07/27/5978c0ce8c33c.png);">
+        <div class="ic-z uk-background-cover uk-panel uk-flex uk-flex-center uk-flex-middle uk-light" uk-cover>
+            <div class="ic-head uk-padding-large uk-text-center uk-child-width-1-1@s">
+                <h1>欢迎来到新式创筑</h1>
+                <p>我们基于 MC 创作生活艺术，致力于创造身临其境的体验</p>
             </div>
         </div>
-    </header>
-    <main class="row">
-        <div class="ic-f">
-            <div class="card card-2 m-f">
-                <h1 id="sp1">独特的团队</h1>
-                <div class="text-line"></div>
-                <small>A unique team in Minecraft</small>
+    </div>
+    <div class="uk-position-top">
+        <nav class="uk-container uk-container-expand uk-light" uk-navbar>
+
+            <div class="uk-navbar-left">
+                <ul class="uk-navbar-nav">
+                    <a class="uk-navbar-item uk-logo" href="index.html">
+                            <img src="dist/logo.svg" width="50px">
+                        </a>
+                </ul>
+            </div>
+
+            <div class="uk-navbar-right">
+                <ul class="uk-navbar-nav">
+                    <li class="uk-active"><a href="index.html">首页</a></li>
+                    <li><a href="works.html">作品</a></li>
+                    <li><a href="https://innovacreation.studio/news/">动态</a></li>
+                    <li><a href="https://forum.innovacreation.studio/">论坛</a></li>
+                    <li><a href="about.html">关于</a></li>
+                </ul>
+            </div>
+        </nav>
+    </div>
+
+    <div class="uk-child-width-1-2@s text-chinese" uk-grid>
+        <div>
+            <div class="uk-dark uk-background-muted uk-padding-large">
+                <h3>ICCP</h3>
                 <p>
-                    我们来自于五湖四海，服务器运维、网站前后端、设计师、Minecraft 建筑师、生存玩家齐聚在此，通过城市规划、建设学习构建让人身临其境的 Minecraft 城镇场景
+                    新式创筑社区服务器（lnnova Creation Community Porject）简称ICCP或对外服，旨在构建一个以个人玩家为主的气氛浓厚环境优良的建筑平台，并可以以此为基础发现和培养有潜力的新人。社区服务器的优势在于建筑氛围、整体素质及一些技术优势。
                 </p>
-            </div>
-            <div class="card card-2 m-f">
-                <h1>良好的基础</h1>
-                <div class="text-line"></div>
-                <small>A good foundation in Minecraft</small>
-                <p>
-                    多年的 Minecraft 游戏经验，从生存到创造与工业我们经过了多年的积累，用心建立每个项目然后在发布共享出来，无论生存还是建筑和红石我们都有擅长之处
-                </p>
-            </div>
-            <div id="works"></div>
-            <div class="card m-f">
-                <h1>我们的作品</h1>
-                <div class="text-line"></div>
-                <div class="card-3 m-f">
-                    <div class="ic-img">
-                        <a href="https://innovacreation.studio/news/2017/02/20/ciaomondo/" target="view_window">
-                            <img class="ic-img" src="images/photo/ic-sgst.jpg" width="200px" height="200px" title="Saint Gestot"/>
-                            </a>
-                    </div>
-                    <a href="https://innovacreation.studio/news/2017/02/20/ciaomondo/" target="view_window">
-                        <h2>圣格斯托</h2>
-                    </a>
-                </div>
-                <div class="card-3 m-f">
-                    <div class="ic-img">
-                        <img src="images/photo/ic-sw.jpg" width="200px" height="200px" title="Switzerland">
-                    </div>
-                    <h2>瑞士项目</h2>
-                </div>
-                <div class="card-3 m-f">
-                    <div class="ic-img">
-                        <img src="images/photo/ic-plus.jpg" width="200px" height="200px">
-                    </div>
-                    <h2><br></h2>
-                </div>
-            </div>
-            <div id="app"></div>
-            <div class="ic-skins"><img src="https://ooo.0o0.ooo/2017/05/06/590dc15336429.png" width="250px"></div>
-            <div class="card m-f ic-app">
-                <h1>ICCP</h1>
-                <div class="text-line"></div>
-                <p style="line-height: 32px;width: 70%;">ICCP的全称为新式创筑社区计划（Innova Creation Community Project），旨在给爱好建筑的个人提供一个环境良好，气氛浓厚的建筑社区。目前社区计划处于一期阶段，而总体规划中将会有二期和三期，内容更多、更丰富，也能够吸引更大范围的玩家。
-社区现在分为三大主题地图：古典时代/摩登时代/先驱时代。从名字即可看出三张地图仅限的建筑风格。</p>
-                <p>
-                    <a href="https://forum.innovacreation.studio/" class="btn btn-main">详情介绍</a>
-                </p>
-            </div>
-            <div class="ic-join card m-f">
-                <h1>加入我们</h1>
-                <div class="text-line"></div>
-                <p>QQ 群组: 566271274</p>
-                <p>官方论坛: <a href="https://bbs.innova.qionouu.cn/">Innova Creation BBS</a></p>
             </div>
         </div>
-    </main>
-    <footer class="ic-footer">
-        <div class="ic-f">
-            <small>Copyright &copy; 2016-2017 Innova Creation</small>
+        <div>
+            <div class="uk-light uk-background-secondary uk-padding-large">
+                <h3>ICCL</h3>
+                <p>
+                    新式创筑实验室（lnnova Creation Laboratory）简称ICCL或对内服，对于内部成员的研究性服务器，主要负责成员的项目建设，和相关的试验，同时为其他团队提供气氛良好的合作平台。其特点在于良好的建筑和科技研究气氛，以及良好的服务器。
+                </p>
+            </div>
         </div>
-    </footer>
+    </div>
+    <div class="text-chinese">
+        <div class="uk-background-cover uk-height-medium uk-panel uk-flex-center uk-flex-center uk-flex-middle" style="background-image: url(https://i.loli.net/2017/08/08/59892c2f687a8.png);">
+            <div class="ic-z uk-background-cover uk-height-medium uk-text-center uk-padding-large uk-light">
+                <h2>免费对外服务</h2>
+                <p>新式创筑现在提供免费的基础游戏周边服务，如果您需要要求不高的渲染、修图或小型手工地形，您可以加入到新式创筑对外服务群里获得免费帮助，相关限制及规定将会在群公告内贴出</p>
+                <a href="https://jq.qq.com/?_wv=1027&k=4EBq7EZ">
+                    <button class="uk-button uk-button-default">获取服务</button>
+                </a>
+            </div>
+        </div>
+    </div>
+
+    <div class="uk-background-default">
+        <footer class="uk-padding uk-text-center">
+            <small>Copyright © 2016-2017 Innova Creation</small>
+        </footer>
+    </div>
+
 </body>
 
 </html>
