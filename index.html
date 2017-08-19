@@ -43,12 +43,28 @@
             </div>
 
             <div class="uk-navbar-right">
-                <ul class="uk-navbar-nav">
+                <ul class="uk-navbar-nav uk-visible@m">
                     <li class="uk-active"><a href="index.html">首页</a></li>
                     <li><a href="works.html">作品</a></li>
                     <li><a href="https://innovacreation.studio/news/">动态</a></li>
                     <li><a href="https://forum.innovacreation.studio/">论坛</a></li>
                     <li><a href="about.html">关于</a></li>
+                </ul>
+                <ul class="uk-navbar uk-hidden@m">
+                    <a href="#offcanvas-slide" uk-icon="icon: menu; ratio: 1.5" uk-toggle></a>
+                    <nav id="offcanvas-slide" uk-offcanvas>
+                        <div class="uk-offcanvas-bar">
+                            <ul class="uk-nav uk-nav-default">
+                                <div class="uk-h3">Innova Creation</div>
+                                <li class="uk-active"><a href="index.html">首页</a></li>
+                                <li><a href="works.html">作品</a></li>
+                                <li><a href="https://innovacreation.studio/news/">动态</a></li>
+                                <li><a href="https://forum.innovacreation.studio/">论坛</a></li>
+                                <li><a href="about.html">关于</a></li>
+                                <li class="uk-nav-divider"></li>
+                            </ul>
+                        </div>
+                    </nav>
                 </ul>
             </div>
         </nav>
