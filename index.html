@@ -51,21 +51,26 @@
                     <li><a href="about.html">关于</a></li>
                 </ul>
                 <ul class="uk-navbar uk-hidden@m">
-                    <a href="#offcanvas-slide" uk-icon="icon: menu; ratio: 1.5" uk-toggle></a>
-                    <nav id="offcanvas-slide" uk-offcanvas>
-                        <div class="uk-offcanvas-bar">
-                            <ul class="uk-nav uk-nav-default">
-                                <div class="uk-h3">Innova Creation</div>
-                                <li class="uk-active"><a href="index.html">首页</a></li>
-                                <li><a href="works.html">作品</a></li>
-                                <li><a href="https://innovacreation.studio/news/">动态</a></li>
-                                <li><a href="https://forum.innovacreation.studio/">论坛</a></li>
-                                <li><a href="about.html">关于</a></li>
-                                <li class="uk-nav-divider"></li>
-                            </ul>
+                    <a href="#modal-full" uk-icon="icon: menu; ratio: 1.5" uk-toggle></a>
+
+                    <div id="modal-full" class="uk-modal-full" uk-modal>
+                        <div class="uk-modal-dialog">
+                            <button class="uk-modal-close-full uk-close-large" type="button" uk-close></button>
+                            <div class="uk-grid-collapse uk-child-width-1-2@s uk-flex-middle" uk-height-viewport uk-grid>
+                                <div class="uk-padding-large uk-text-center">
+                                    <div class="uk-h2 uk-list uk-link-text">
+                                        <li><a href="index.html">首页</a></li>
+                                        <li><a href="works.html">作品</a></li>
+                                        <li><a href="https://innovacreation.studio/news/">动态</a></li>
+                                        <li><a href="https://forum.innovacreation.studio/">论坛</a></li>
+                                        <li><a href="about.html">关于</a></li>
+                                    </div>
+                                </div>
+                            </div>
                         </div>
-                    </nav>
+                    </div>
                 </ul>
+
             </div>
         </nav>
     </div>
@@ -89,9 +94,9 @@
         </div>
     </div>
     <div class="text-chinese">
-        <div class="uk-background-cover uk-height-medium uk-panel uk-flex-center uk-flex-center uk-flex-middle" style="background-image: url(https://i.loli.net/2017/08/08/59892c2f687a8.png);">
-            <div class="ic-z uk-background-cover uk-height-medium uk-text-center uk-padding-large uk-light">
-                <h2>免费对外服务</h2>
+        <div class="uk-background-cover uk-height-large uk-panel uk-flex-center uk-flex-center uk-flex-middle" style="background-image: url(https://i.loli.net/2017/08/19/5997a0928ac5a.jpg);">
+            <div class="ic-z uk-background-cover uk-height-large uk-text-center uk-padding-large uk-light">
+                <h2 class="uk-margin-large-top">免费对外服务</h2>
                 <p>新式创筑现在提供免费的基础游戏周边服务，如果您需要要求不高的渲染、修图或小型手工地形，您可以加入到新式创筑对外服务群里获得免费帮助，相关限制及规定将会在群公告内贴出</p>
                 <a href="https://jq.qq.com/?_wv=1027&k=4EBq7EZ">
                     <button class="uk-button uk-button-default">获取服务</button>
