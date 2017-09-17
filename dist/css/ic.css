@@ -1,16 +1,13 @@
-.text-chinese p {
+p {
     line-height: 33px;
 }
 
 .ic-head-bg {
     height: 100vh;
-    max-height: 830px;
-}
-.ic-head h1 {
-    font-size: 4.5em;
+    max-height: 900px;
 }
 .ic-z {
-    background-color: RGBA(33, 33, 33, 0.60); 
+    background-color: RGBA(33, 33, 33, 0.50); 
 }
 .ic-text-w {
     width: 80%;
