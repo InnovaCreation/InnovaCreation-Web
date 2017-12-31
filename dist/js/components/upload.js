@@ -1,4 +1,4 @@
-/*! UIkit 3.0.0-beta.27 | http://www.getuikit.com | (c) 2014 - 2017 YOOtheme | MIT License */
+/*! UIkit 3.0.0-beta.35 | http://www.getuikit.com | (c) 2014 - 2017 YOOtheme | MIT License */
 
 (function (global, factory) {
 	typeof exports === 'object' && typeof module !== 'undefined' ? module.exports = factory() :
@@ -13,9 +13,13 @@ function plugin(UIkit) {
     }
 
     var ref = UIkit.util;
-    var $ = ref.$;
+    var addClass = ref.addClass;
     var ajax = ref.ajax;
+    var matches = ref.matches;
+    var noop = ref.noop;
     var on = ref.on;
+    var removeClass = ref.removeClass;
+    var trigger = ref.trigger;
 
     UIkit.component('upload', {
 
@@ -23,50 +27,50 @@ function plugin(UIkit) {
             allow: String,
             clsDragover: String,
             concurrent: Number,
-            dataType: String,
+            maxSize: Number,
             mime: String,
             msgInvalidMime: String,
             msgInvalidName: String,
+            msgInvalidSize: String,
             multiple: Boolean,
             name: String,
             params: Object,
             type: String,
-            url: String
+            url: String,
         },
 
         defaults: {
             allow: false,
             clsDragover: 'uk-dragover',
             concurrent: 1,
-            dataType: undefined,
+            maxSize: 0,
             mime: false,
             msgInvalidMime: 'Invalid File Type: %s',
             msgInvalidName: 'Invalid File Name: %s',
+            msgInvalidSize: 'Invalid File Size: %s Bytes Max',
             multiple: false,
             name: 'files[]',
             params: {},
             type: 'POST',
             url: '',
-            abort: null,
-            beforeAll: null,
-            beforeSend: null,
-            complete: null,
-            completeAll: null,
-            error: null,
-            fail: function fail(msg) {
-                alert(msg);
-            },
-            load: null,
-            loadEnd: null,
-            loadStart: null,
-            progress: null
+            abort: noop,
+            beforeAll: noop,
+            beforeSend: noop,
+            complete: noop,
+            completeAll: noop,
+            error: noop,
+            fail: noop,
+            load: noop,
+            loadEnd: noop,
+            loadStart: noop,
+            progress: noop
         },
 
         events: {
 
             change: function change(e) {
 
-                if (!$(e.target).is('input[type="file"]')) {
+                if (!matches(e.target, 'input[type="file"]')) {
                     return;
                 }
 
@@ -80,35 +84,31 @@ function plugin(UIkit) {
             },
 
             drop: function drop(e) {
-                e.preventDefault();
-                e.stopPropagation();
+                stop(e);
 
-                var transfer = e.originalEvent.dataTransfer;
+                var transfer = e.dataTransfer;
 
                 if (!transfer || !transfer.files) {
                     return;
                 }
 
-                this.$removeClass(this.clsDragover);
+                removeClass(this.$el, this.clsDragover);
 
                 this.upload(transfer.files);
             },
 
             dragenter: function dragenter(e) {
-                e.preventDefault();
-                e.stopPropagation();
+                stop(e);
             },
 
             dragover: function dragover(e) {
-                e.preventDefault();
-                e.stopPropagation();
-                this.$addClass(this.clsDragover);
+                stop(e);
+                addClass(this.$el, this.clsDragover);
             },
 
             dragleave: function dragleave(e) {
-                e.preventDefault();
-                e.stopPropagation();
-                this.$removeClass(this.clsDragover);
+                stop(e);
+                removeClass(this.$el, this.clsDragover);
             }
 
         },
@@ -123,22 +123,23 @@ function plugin(UIkit) {
                     return;
                 }
 
-                this.$el.trigger('upload', [files]);
+                trigger(this.$el, 'upload', [files]);
 
                 for (var i = 0; i < files.length; i++) {
 
-                    if (this$1.allow) {
-                        if (!match(this$1.allow, files[i].name)) {
-                            this$1.fail(this$1.msgInvalidName.replace(/%s/, this$1.allow));
-                            return;
-                        }
+                    if (this$1.maxSize && this$1.maxSize * 1000 < files[i].size) {
+                        this$1.fail(this$1.msgInvalidSize.replace('%s', this$1.allow));
+                        return;
                     }
 
-                    if (this$1.mime) {
-                        if (!match(this$1.mime, files[i].type)) {
-                            this$1.fail(this$1.msgInvalidMime.replace(/%s/, this$1.mime));
-                            return;
-                        }
+                    if (this$1.allow && !match(this$1.allow, files[i].name)) {
+                        this$1.fail(this$1.msgInvalidName.replace('%s', this$1.allow));
+                        return;
+                    }
+
+                    if (this$1.mime && !match(this$1.mime, files[i].type)) {
+                        this$1.fail(this$1.msgInvalidMime.replace('%s', this$1.mime));
+                        return;
                     }
 
                 }
@@ -147,7 +148,7 @@ function plugin(UIkit) {
                     files = [files[0]];
                 }
 
-                this.beforeAll && this.beforeAll(this, files);
+                this.beforeAll(this, files);
 
                 var chunks = chunk(files, this.concurrent),
                     upload = function (files) {
@@ -160,33 +161,33 @@ function plugin(UIkit) {
                             data.append(key, this$1.params[key]);
                         }
 
-                        ajax({
+                        ajax(this$1.url, {
                             data: data,
-                            url: this$1.url,
-                            type: this$1.type,
-                            dataType: this$1.dataType,
-                            beforeSend: this$1.beforeSend,
-                            complete: [this$1.complete, function (xhr, status) {
+                            method: this$1.type,
+                            beforeSend: function (env) {
+
+                                var xhr = env.xhr;
+                                xhr.upload && on(xhr.upload, 'progress', this$1.progress);
+                                ['loadStart', 'load', 'loadEnd', 'abort'].forEach(function (type) { return on(xhr, type.toLowerCase(), this$1[type]); }
+                                );
+
+                                this$1.beforeSend(env);
+
+                            }
+                        }).then(
+                            function (xhr) {
+
+                                this$1.complete(xhr);
+
                                 if (chunks.length) {
                                     upload(chunks.shift());
                                 } else {
-                                    this$1.completeAll && this$1.completeAll(xhr);
+                                    this$1.completeAll(xhr);
                                 }
 
-                                if (status === 'abort') {
-                                    this$1.abort && this$1.abort(xhr);
-                                }
-                            }],
-                            cache: false,
-                            contentType: false,
-                            processData: false,
-                            xhr: function () {
-                                var xhr = $.ajaxSettings.xhr();
-                                xhr.upload && this$1.progress && on(xhr.upload, 'progress', this$1.progress);
-                                ['loadStart', 'load', 'loadEnd', 'error', 'abort'].forEach(function (type) { return this$1[type] && on(xhr, type.toLowerCase(), this$1[type]); });
-                                return xhr;
-                            }
-                        });
+                            },
+                            function (e) { return this$1.error(e.message); }
+                        );
 
                     };
 
@@ -207,11 +208,16 @@ function plugin(UIkit) {
         for (var i = 0; i < files.length; i += size) {
             var chunk = [];
             for (var j = 0; j < size; j++) {
-                chunk.push(files[i+j]);
+                chunk.push(files[i + j]);
             }
             chunks.push(chunk);
         }
         return chunks;
+    }
+
+    function stop(e) {
+        e.preventDefault();
+        e.stopPropagation();
     }
 
 }

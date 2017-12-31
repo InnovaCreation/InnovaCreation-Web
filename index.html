@@ -9,49 +9,93 @@
     <script src="dist/js/jquery.min.js"></script>
     <script src="dist/js/uikit.min.js"></script>
     <script src="dist/js/uikit-icons.min.js"></script>
+    <style>
+        @import url(//fonts.googleapis.com/earlyaccess/notosanssc.css);
+    </style>
 
     <!-- SEO -->
     <meta http-equiv="Cache-Control" content="no-siteapp" />
     <meta name="keywords" content="innovacreation design minecraft">
     <meta name="description" content="InnovaCreation 新式创筑是一个集网站、服务器、建筑于一体的Minecraft团队">
     <link rel="shortcut icon" type="image/ico" href="favicon.ico" />
+    <!-- iphone X -->
+    <meta name="viewport" content="viewport-fit=cover">
 
     <meta charset="utf-8">
     <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">    
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <meta name="theme-color" content="#ef5350">
 </head>
 
 <body>
-    <div class="uk-background-cover ic-head-bg uk-panel uk-flex uk-flex-middle" style="background-image: url(https://i.loli.net/2017/07/27/5978c0ce8c33c.png);">
+    <div class="uk-background-cover ic-head-bg uk-panel uk-flex uk-flex-middle" style="background-image: url(dist/images/bg.png);">
         <div class="ic-z uk-background-cover uk-panel uk-flex uk-flex-center uk-flex-middle uk-light" uk-cover>
-            <div class="uk-text-middle uk-padding">
+            <div class="uk-text-middle uk-text-center uk-padding">
                 <h1 class="uk-heading-primary">欢迎来到新式创筑</h1>
-                <p>我们基于 MC 创作艺术，致力于创造让玩家身临其境的场景。</p>
+                <p>我们是与众不同的团队，我们努力做到尽善尽美</p>
             </div>
+
             <div class="uk-text-center uk-animation-toggle uk-position-bottom-center">
-                <a href="#container" uk-scroll <span class="uk-animation-slide-bottom-small" uk-icon="icon: chevron-down; ratio: 2"></span></a>
+                <a href="#container" uk-scroll>
+                    <span class="uk-animation-slide-bottom-small" uk-icon="icon: chevron-down; ratio: 2" style="margin: 3em 0;">
+                    </span>
+                </a>
             </div>
         </div>
+
+
+
     </div>
     </div>
     <div class="uk-position-top">
 
-        <nav class="uk-container uk-container-expand uk-light" style="z-index: 980;" uk-navbar>
+        <nav class="uk-background-default uk-container uk-container-expand" style="z-index: 980;" uk-sticky="top: #container; animation: uk-animation-slide-top; bottom: #sticky-on-scroll-up"
+            uk-navbar>
 
             <div class="uk-navbar-left">
                 <ul class="uk-navbar-nav">
                     <a class="uk-navbar-item uk-logo" href="index.html">
-                            <img src="dist/logo.svg" width="50px">
-                        </a>
+                        <img src="dist/logo.svg" width="40px">
+                    </a>
                 </ul>
             </div>
 
             <div class="uk-navbar-right">
                 <ul class="uk-navbar-nav uk-visible@m">
-                    <li class="uk-active"><a href="index.html">首页</a></li>
-                    <li><a href="https://innovacreation.studio/news/">作品</a></li>
-                    <li><a href="about.html">关于</a></li>
+                    <li class="uk-active">
+                        <a href="index.html">首页</a>
+                    </li>
+                    <li>
+                        <a href="https://innovacreation.studio/news/tag/project/">作品</a>
+                    </li>
+                    <li>
+                        <a href="https://innovacreation.studio/news/">动态</a>
+                    </li>
+                    <li>
+                        <a href="about.html">关于</a>
+                    </li>
+                    <li>
+
+                        <a href="#modal-full" style="color:red" uk-icon="icon: hashtag" uk-toggle>2018</a>
+
+                        <div id="modal-full" class="uk-modal-full" uk-modal>
+                            <div class="uk-modal-dialog">
+                                <button class="uk-modal-close-full uk-close-large" type="button" uk-close></button>
+                                <div class="uk-grid-collapse uk-child-width-1-2@s uk-flex-middle" uk-grid>
+                                    <div class="uk-background-cover" style="background-image: url('http://ppe.oss-cn-shenzhen.aliyuncs.com/palette/10100/1514261048821/thumb_Tue_Dec_26_2017.jpg');"
+                                        uk-height-viewport></div>
+                                    <div class="uk-padding-large">
+                                        <h1 style="color:red">2018 新年快乐</h1>
+                                        <p>
+                                            新年快乐！感谢大家的关注，展望未来 VR、3D 打印等技术将会大行其道，我们将通过更多的技术展现 Minecraft 的艺术之美。同时我们会带来细节更加丰富的作品敬请期待咯。
+                                        </p>
+                                        <p>by: 来自新式创筑的新年祝福</p>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                    </li>
                 </ul>
                 <ul class="uk-navbar uk-hidden@m">
                     <a href="#modal-full" uk-icon="icon: menu; ratio: 1.5" uk-toggle></a>
@@ -62,74 +106,121 @@
                             <div class="uk-grid-collapse uk-child-width-1-2@s uk-flex-middle" uk-height-viewport uk-grid>
                                 <div class="uk-padding-large uk-text-center">
                                     <div class="uk-h2 uk-list uk-link-text">
-                                        <li><a href="index.html">首页</a></li>
-                                        <li><a href="https://innovacreation.studio/news/">作品</a></li>
-                                        <li><a href="https://innovacreation.studio/news/">动态</a></li>
-                                        <li><a href="about.html">关于</a></li>
+                                        <li>
+                                            <a href="index.html">首页</a>
+                                        </li>
+                                        <li>
+                                            <a href="works.html">作品</a>
+                                        </li>
+                                        <li>
+                                            <a href="https://innovacreation.studio/news/">动态</a>
+                                        </li>
+                                        <li>
+                                            <a href="about.html">关于</a>
+                                        </li>
                                     </div>
                                 </div>
                             </div>
                         </div>
                     </div>
                 </ul>
-
             </div>
         </nav>
 
     </div>
 
     <div id="container"></div>
+
     <div class="uk-column-1-2@s uk-column-divider uk-text-center">
-        <div>
-            <div class="uk-card uk-card-body uk-padding-large">
-                <span uk-icon="icon: world; ratio: 2.7"></span>
-                <h3>ICCP</h3>
+        <div class="uk-padding-large">
+            <div class="uk-card uk-card-body uk-height-large">
+                <img src="dist/images/test2.png">
+                <h3>文化学习</h3>
                 <p>
-                    新式创筑社区服务器（lnnova Creation Community Porject）简称ICCP或对外服，旨在构建一个以个人玩家为主的气氛浓厚环境优良的建筑平台，并可以以此为基础发现和培养有潜力的新人。社区服务器的优势在于建筑氛围、整体素质及一些技术优势。
+                    展望未来，伦敦大火还原和一些有关 Minecraft 的展会，已经证明一个亲近于年轻人的，便于上手的工具，有效提升了文化历史在展示中的吸引力，并降低了其学习的成本。
                 </p>
             </div>
         </div>
-        <div>
-            <div class="uk-card uk-card-body uk-padding-large">
-                <span uk-icon="icon: code; ratio: 2.7"></span>
-                <h3>ICCL</h3>
+        <div class="uk-padding-large">
+            <div class="uk-card uk-card-body uk-height-large">
+                <img src="dist/images/test.png">
+                <h3>工匠精神</h3>
                 <p>
-                    新式创筑实验室（InnovaCreation Construction Laboratories）简称ICCL或对内服，对于内部成员的研究性服务器，主要负责成员的项目建设，和相关的试验，同时为其他团队提供气氛良好的合作平台。其特点在于良好的建筑和科技研究气氛，以及良好的服务器。
+                    和对待艺术品一样，用心对待每一个 Minecraft作品的创作，从结构到外观，精细布置每一块细节，我们同时非常重视场景和规划的设计，力求展现让人身临其境的场景。
                 </p>
             </div>
         </div>
     </div>
     </div>
 
-    <div class="uk-background-cover uk-panel uk-height-large uk-flex-middle" style="background-image: url(https://i.loli.net/2017/08/19/5997a0928ac5a.jpg);">
-        <div class="ic-z uk-background-cover uk-height-large uk-text-center uk-padding-large uk-light">
-            <div class="uk-position-center uk-padding-large">
-                <h2 class="uk-h1">加入对外交流</h2>
-                <p>你已经期待已久了吧那就赶紧加入交流吧，入群后如果希望加入外服请自行艾特管理发送 ID 获取白名单，丰富优美的地形世界期待着你的美妙建筑。全新的生存模式即将来临尽请期待</p>
-                <a href="#">
-                        <a target="_blank" href="//shang.qq.com/wpa/qunwpa?idkey=40b6c5fc6b92ca2e4d83a585d3b321fa07b1299443b82978dd312195ff910894">
-                            <button class="uk-button uk-button-default">开始旅程</button>
-                        </a>
+    <div class="uk-padding-large uk-background-secondary">
+        <div class="uk-position-relative uk-visible-toggle uk-light" uk-slideshow="animation: fade">
+            <h1 class="uk-text-center uk-padding">独特的作品</h1>
+            <ul class="uk-slideshow-items">
+                <li>
+                    <img src="https://i.loli.net/2017/12/30/5a466f010296d.png" alt="" uk-cover>
+                    <div class="uk-overlay uk-overlay-primary uk-position-bottom uk-text-center uk-transition-slide-bottom">
+                        <p class="uk-margin-remove">在明清时期，华夏大地上的劳动人民对于宗教神灵的崇拜达到了一个高峰 ......</p>
+                    </div>
+                </li>
+                <li>
+                    <img src="https://i.loli.net/2017/07/27/5978c0ce8c33c.png" alt="" uk-cover>
+                    <div class="uk-overlay uk-overlay-primary uk-position-bottom uk-text-center uk-transition-slide-bottom">
+                        <p class="uk-margin-remove">Schetopia 位于瑞士东北部，是一个雪山下的旅游小镇，一栋栋经典的瑞士风格小木屋树立其中 ......</p>
+                    </div>
+                </li>
+                <li>
+                    <img src="https://i.loli.net/2017/08/19/5997a0928ac5a.jpg" alt="" uk-cover>
+                    <div class="uk-overlay uk-overlay-primary uk-position-bottom uk-text-center uk-transition-slide-bottom">
+                        <p class="uk-margin-remove">色泽之城的灵感来源于镜之边缘，但镜之边缘的整体色调偏白了，而色泽之城的色调则非常丰富 ......</p>
+                    </div>
+                </li>
+            </ul>
+
+            <a class="uk-position-center-left uk-position-small uk-hidden-hover" href="#" uk-slidenav-previous uk-slideshow-item="previous"></a>
+            <a class="uk-position-center-right uk-position-small uk-hidden-hover" href="#" uk-slidenav-next uk-slideshow-item="next"></a>
+            <div class="uk-text-center uk-padding">
+                <a href="https://innovacreation.studio/news/tag/project/">
+                    <button class="uk-button uk-button-default">更多作品</button>
                 </a>
             </div>
+
         </div>
     </div>
 
-    <div class="uk-background-cover uk-panel uk-height-large uk-flex-middle uk-background-secondary uk-light">
-        <div class="uk-position-center uk-padding-large">
-            <h2 class="uk-heading-divider">
-                    <span class="uk-padding-small" uk-icon="icon: cog; ratio: 2"></span>免费对外服务
-                </h2>
-            <p>新式创筑现在提供免费的基础游戏周边服务，如果您需要要求不高的渲染、修图或小型手工地形，您可以加入到新式创筑对外服务群里获得免费帮助，相关限制及规定将会在群公告内贴出。</p>
-            <a href="#">
-                <a href="https://jq.qq.com/?_wv=1027&k=4EBq7EZ">
-                    <button class="uk-button uk-button-text"><span class="uk-margin-small-right" uk-icon="icon: arrow-right;"></span>获取服务</button>
+    <div class="uk-padding-large uk-height-large">
+        <h2 class="uk-heading-divider">
+            <span class="uk-padding-small" uk-icon="icon: users; ratio: 2"></span>加入对外交流
+        </h2>
+        <p>你已经期待已久了吧那就赶紧加入交流吧，丰富优美的地形世界期待着你的美妙建筑。</p>
+
+        <ul class="uk-navbar-nav">
+            <li>
+                <a href="https://jq.qq.com/?_wv=1027&k=4EBq7EZ" class="uk-padding-remove-left">
+                    <span class="uk-margin-small-right" uk-icon="icon: link">QQ 群组</span>
                 </a>
-        </div>
+            </li>
+            <li>
+                <a href="https://discord.gg/PJRET99" class="uk-padding-remove-left">
+                    <span class="uk-margin-small-right" uk-icon="icon: link">Discord 频道</span>
+                </a>
+            </li>
+        </ul>
+    </div>
+
+    <div class="uk-padding-large uk-height uk-light uk-text-center" style="background: red;">
+        <h2>
+            加入团队
+        </h2>
+        <p>如果你有足够的信心，和学习的能力那么欢迎加入我们</p>
+        <a href="about.html">
+            <button class="uk-button uk-button-text">申请加入</button>
+        </a>
     </div>
 
 
-    <div class="uk-background-default">
+
+    <div class="uk-background-muted">
         <footer class="uk-padding uk-text-center">
             <small>Copyright © 2016-2017 Innova Creation</small>
         </footer>

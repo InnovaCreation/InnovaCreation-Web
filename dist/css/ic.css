@@ -1,16 +1,22 @@
-body{
-    padding: constant(safe-area-inset-top) constant(safe-area-inset-right) constant(safe-area-inset-bottom) constant(safe-area-inset-left);    
+html {
+    font-family: 'Noto Sans SC', sans-serif;
 }
+
 p {
     line-height: 33px;
 }
+
+.uk-navbar {
+    height: 65px;
+}
+
 
 .ic-head-bg {
     height: 100vh;
     max-height: 900px;
 }
 .ic-z {
-    background-color: RGBA(33, 33, 33, 0.50); 
+    background-color: RGBA(33, 33, 33, 0.20); 
 }
 .ic-text-w {
     width: 80%;

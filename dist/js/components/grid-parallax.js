@@ -1,4 +1,4 @@
-/*! UIkit 3.0.0-beta.27 | http://www.getuikit.com | (c) 2014 - 2017 YOOtheme | MIT License */
+/*! UIkit 3.0.0-beta.35 | http://www.getuikit.com | (c) 2014 - 2017 YOOtheme | MIT License */
 
 (function (global, factory) {
 	typeof exports === 'object' && typeof module !== 'undefined' ? module.exports = factory() :
@@ -13,7 +13,10 @@ function plugin(UIkit) {
     }
 
     var ref = UIkit.util;
+    var addClass = ref.addClass;
+    var css = ref.css;
     var scrolledOver = ref.scrolledOver;
+    var toFloat = ref.toFloat;
 
     UIkit.component('grid-parallax', UIkit.components.grid.extend({
 
@@ -27,40 +30,44 @@ function plugin(UIkit) {
             translate: 150
         },
 
+        computed: {
+
+            translate: function translate(ref) {
+                var translate = ref.translate;
+
+                return Math.abs(translate);
+            }
+
+        },
+
         init: function init() {
-            this.$addClass('uk-grid');
+            addClass(this.$el, 'uk-grid');
         },
 
         disconnected: function disconnected() {
             this.reset();
-            this.$el.css('margin-bottom', '');
-        },
-
-        computed: {
-
-            translate: function translate() {
-                return Math.abs(this.$props.translate);
-            },
-
-            items: function items() {
-                return (this.target ? this.$el.find(this.target) : this.$el.children()).toArray();
-            }
-
+            css(this.$el, 'marginBottom', '');
         },
 
         update: [
 
             {
 
-                read: function read() {
-                    this.columns = this.rows && this.rows[0] && this.rows[0].length || 0;
-                    this.rows = this.rows && this.rows.map(function (elements) { return sortBy(elements, 'offsetLeft'); });
+                read: function read(ref) {
+                    var rows = ref.rows;
+
+                    return {
+                        columns: rows && rows[0] && rows[0].length || 0,
+                        rows: rows && rows.map(function (elements) { return sortBy(elements, 'offsetLeft'); })
+                    };
                 },
 
-                write: function write() {
-                    this.$el
-                        .css('margin-bottom', '')
-                        .css('margin-bottom', this.columns > 1 ? this.translate + parseFloat(this.$el.css('margin-bottom')) : '');
+                write: function write(ref) {
+                    var columns = ref.columns;
+
+                    css(this.$el, 'marginBottom', columns > 1
+                        ? this.translate + toFloat(css(css(this.$el, 'marginBottom', ''), 'marginBottom'))
+                        : '');
                 },
 
                 events: ['load', 'resize']
@@ -69,20 +76,20 @@ function plugin(UIkit) {
             {
 
                 read: function read() {
-
-                    this.scrolled = scrolledOver(this.$el) * this.translate;
-
+                    return {scrolled: scrolledOver(this.$el) * this.translate};
                 },
 
-                write: function write() {
-                    var this$1 = this;
+                write: function write(ref) {
+                    var rows = ref.rows;
+                    var columns = ref.columns;
+                    var scrolled = ref.scrolled;
 
 
-                    if (!this.rows || this.columns === 1 || !this.scrolled) {
+                    if (!rows || columns === 1 || !scrolled) {
                         return this.reset();
                     }
 
-                    this.rows.forEach(function (row) { return row.forEach(function (el, i) { return el.style.transform = "translateY(" + (i % 2 ? this$1.scrolled : this$1.scrolled / 8) + "px)"; }
+                    rows.forEach(function (row) { return row.forEach(function (el, i) { return css(el, 'transform', ("translateY(" + (i % 2 ? scrolled : scrolled / 8) + "px)")); }
                         ); }
                     );
 
@@ -95,7 +102,7 @@ function plugin(UIkit) {
         methods: {
 
             reset: function reset() {
-                this.items.forEach(function (item) { return item.style.transform = ''; });
+                css(this.$el.children, 'transform', '');
             }
 
         }
@@ -113,17 +120,15 @@ function plugin(UIkit) {
     });
 
     function sortBy(collection, prop) {
-        return collection.sort(function (a,b) { return a[prop] > b[prop]
+        return collection.sort(function (a, b) { return a[prop] > b[prop]
                 ? 1
                 : b[prop] > a[prop]
                     ? -1
                     : 0; }
-        )
+        );
     }
 
 }
-
-
 
 if (!false && typeof window !== 'undefined' && window.UIkit) {
     window.UIkit.use(plugin);

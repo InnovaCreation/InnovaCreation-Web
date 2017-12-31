@@ -1,4 +1,4 @@
-/*! UIkit 3.0.0-beta.27 | http://www.getuikit.com | (c) 2014 - 2017 YOOtheme | MIT License */
+/*! UIkit 3.0.0-beta.35 | http://www.getuikit.com | (c) 2014 - 2017 YOOtheme | MIT License */
 
 (function (global, factory) {
 	typeof exports === 'object' && typeof module !== 'undefined' ? module.exports = factory() :
@@ -11,6 +11,12 @@ function plugin(UIkit) {
     if (plugin.installed) {
         return;
     }
+
+    var ref = UIkit.util;
+    var $ = ref.$;
+    var doc = ref.doc;
+    var empty = ref.empty;
+    var html = ref.html;
 
     UIkit.component('countdown', {
 
@@ -30,30 +36,40 @@ function plugin(UIkit) {
 
         computed: {
 
-            date: function date() {
-                return Date.parse(this.$props.date);
+            date: function date(ref) {
+                var date = ref.date;
+
+                return Date.parse(date);
             },
 
-            days: function days() {
-                return this.$el.find(this.clsWrapper.replace('%unit%', 'days'));
+            days: function days(ref, $el) {
+                var clsWrapper = ref.clsWrapper;
+
+                return $(clsWrapper.replace('%unit%', 'days'), $el);
             },
 
-            hours: function hours() {
-                return this.$el.find(this.clsWrapper.replace('%unit%', 'hours'));
+            hours: function hours(ref, $el) {
+                var clsWrapper = ref.clsWrapper;
+
+                return $(clsWrapper.replace('%unit%', 'hours'), $el);
             },
 
-            minutes: function minutes() {
-                return this.$el.find(this.clsWrapper.replace('%unit%', 'minutes'));
+            minutes: function minutes(ref, $el) {
+                var clsWrapper = ref.clsWrapper;
+
+                return $(clsWrapper.replace('%unit%', 'minutes'), $el);
             },
 
-            seconds: function seconds() {
-                return this.$el.find(this.clsWrapper.replace('%unit%', 'seconds'));
+            seconds: function seconds(ref, $el) {
+                var clsWrapper = ref.clsWrapper;
+
+                return $(clsWrapper.replace('%unit%', 'seconds'), $el);
             },
 
             units: function units() {
                 var this$1 = this;
 
-                return ['days', 'hours', 'minutes', 'seconds'].filter(function (unit) { return this$1[unit].length; });
+                return ['days', 'hours', 'minutes', 'seconds'].filter(function (unit) { return this$1[unit]; });
             }
 
         },
@@ -66,8 +82,28 @@ function plugin(UIkit) {
             var this$1 = this;
 
             this.stop();
-            this.units.forEach(function (unit) { return this$1[unit].empty(); });
+            this.units.forEach(function (unit) { return empty(this$1[unit]); });
         },
+
+        events: [
+
+            {
+
+                name: 'visibilitychange',
+
+                el: doc,
+
+                handler: function handler() {
+                    if (doc.hidden) {
+                        this.stop();
+                    } else {
+                        this.start();
+                    }
+                }
+
+            }
+
+        ],
 
         update: {
 
@@ -94,15 +130,15 @@ function plugin(UIkit) {
 
                     digits = digits.length < 2 ? ("0" + digits) : digits;
 
-                    if (this$1[unit].text() !== digits) {
-                        var el = this$1[unit];
+                    var el = this$1[unit];
+                    if (el.textContent !== digits) {
                         digits = digits.split('');
 
-                        if (digits.length !== el.children().length) {
-                            el.empty().append(digits.map(function () { return '<span></span>'; }).join(''));
+                        if (digits.length !== el.children.length) {
+                            html(el, digits.map(function () { return '<span></span>'; }).join(''));
                         }
 
-                        digits.forEach(function (digit, i) { return el[0].childNodes[i].innerText = digit; });
+                        digits.forEach(function (digit, i) { return el.children[i].textContent = digit; });
                     }
 
                 });
