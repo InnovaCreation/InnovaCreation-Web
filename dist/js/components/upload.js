@@ -150,46 +150,46 @@ function plugin(UIkit) {
 
                 this.beforeAll(this, files);
 
-                var chunks = chunk(files, this.concurrent),
-                    upload = function (files) {
+                var chunks = chunk(files, this.concurrent);
+                var upload = function (files) {
 
-                        var data = new FormData();
+                    var data = new FormData();
 
-                        files.forEach(function (file) { return data.append(this$1.name, file); });
+                    files.forEach(function (file) { return data.append(this$1.name, file); });
 
-                        for (var key in this$1.params) {
-                            data.append(key, this$1.params[key]);
+                    for (var key in this$1.params) {
+                        data.append(key, this$1.params[key]);
+                    }
+
+                    ajax(this$1.url, {
+                        data: data,
+                        method: this$1.type,
+                        beforeSend: function (env) {
+
+                            var xhr = env.xhr;
+                            xhr.upload && on(xhr.upload, 'progress', this$1.progress);
+                            ['loadStart', 'load', 'loadEnd', 'abort'].forEach(function (type) { return on(xhr, type.toLowerCase(), this$1[type]); }
+                            );
+
+                            this$1.beforeSend(env);
+
                         }
+                    }).then(
+                        function (xhr) {
 
-                        ajax(this$1.url, {
-                            data: data,
-                            method: this$1.type,
-                            beforeSend: function (env) {
+                            this$1.complete(xhr);
 
-                                var xhr = env.xhr;
-                                xhr.upload && on(xhr.upload, 'progress', this$1.progress);
-                                ['loadStart', 'load', 'loadEnd', 'abort'].forEach(function (type) { return on(xhr, type.toLowerCase(), this$1[type]); }
-                                );
-
-                                this$1.beforeSend(env);
-
+                            if (chunks.length) {
+                                upload(chunks.shift());
+                            } else {
+                                this$1.completeAll(xhr);
                             }
-                        }).then(
-                            function (xhr) {
 
-                                this$1.complete(xhr);
+                        },
+                        function (e) { return this$1.error(e.message); }
+                    );
 
-                                if (chunks.length) {
-                                    upload(chunks.shift());
-                                } else {
-                                    this$1.completeAll(xhr);
-                                }
-
-                            },
-                            function (e) { return this$1.error(e.message); }
-                        );
-
-                    };
+                };
 
                 upload(chunks.shift());
 

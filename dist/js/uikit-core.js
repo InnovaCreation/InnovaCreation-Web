@@ -6,7 +6,340 @@
 	(global.UIkit = factory());
 }(this, (function () { 'use strict';
 
+function bind(fn, context) {
+    return function (a) {
+        var l = arguments.length;
+        return l ? l > 1 ? fn.apply(context, arguments) : fn.call(context, a) : fn.call(context);
+    };
+}
+
+var ref = Object.prototype;
+var hasOwnProperty = ref.hasOwnProperty;
+
+function hasOwn(obj, key) {
+    return hasOwnProperty.call(obj, key);
+}
+
+var hyphenateRe = /([a-z\d])([A-Z])/g;
+
+function hyphenate(str) {
+    return str
+        .replace(hyphenateRe, '$1-$2')
+        .toLowerCase();
+}
+
+var camelizeRE = /-(\w)/g;
+
+function camelize(str) {
+    return str.replace(camelizeRE, toUpper);
+}
+
+function toUpper(_, c) {
+    return c ? c.toUpperCase() : '';
+}
+
+function ucfirst(str) {
+    return str.length ? toUpper(null, str.charAt(0)) + str.slice(1) : '';
+}
+
+var strPrototype = String.prototype;
+var startsWithFn = strPrototype.startsWith || function (search) { return this.lastIndexOf(search, 0) === 0; };
+
+function startsWith(str, search) {
+    return startsWithFn.call(str, search);
+}
+
+var endsWithFn = strPrototype.endsWith || function (search) { return this.substr(-search.length) === search; };
+
+function endsWith(str, search) {
+    return endsWithFn.call(str, search);
+}
+
+var includesFn = function (search) { return ~this.indexOf(search); };
+var includesStr = strPrototype.includes || includesFn;
+var includesArray = Array.prototype.includes || includesFn;
+
+function includes(obj, search) {
+    return obj && (isString(obj) ? includesStr : includesArray).call(obj, search);
+}
+
+var isArray = Array.isArray;
+
+function isFunction(obj) {
+    return typeof obj === 'function';
+}
+
+function isObject(obj) {
+    return obj !== null && typeof obj === 'object';
+}
+
+function isPlainObject(obj) {
+    return isObject(obj) && Object.getPrototypeOf(obj) === Object.prototype;
+}
+
+function isWindow(obj) {
+    return isObject(obj) && obj === obj.window;
+}
+
+function isDocument(obj) {
+    return isObject(obj) && obj.nodeType === 9;
+}
+
+function isJQuery(obj) {
+    return isObject(obj) && !!obj.jquery;
+}
+
+function isNode(element) {
+    return element instanceof Node || isObject(element) && element.nodeType === 1;
+}
+
+function isNodeCollection(element) {
+    return element instanceof NodeList || element instanceof HTMLCollection;
+}
+
+function isBoolean(value) {
+    return typeof value === 'boolean';
+}
+
+function isString(value) {
+    return typeof value === 'string';
+}
+
+function isNumber(value) {
+    return typeof value === 'number';
+}
+
+function isNumeric(value) {
+    return isNumber(value) || isString(value) && !isNaN(value - parseFloat(value));
+}
+
+function isUndefined(value) {
+    return value === void 0;
+}
+
+function toBoolean(value) {
+    return isBoolean(value)
+        ? value
+        : value === 'true' || value === '1' || value === ''
+            ? true
+            : value === 'false' || value === '0'
+                ? false
+                : value;
+}
+
+function toNumber(value) {
+    var number = Number(value);
+    return !isNaN(number) ? number : false;
+}
+
+function toFloat(value) {
+    return parseFloat(value) || 0;
+}
+
+function toNode(element) {
+    return isNode(element) || isWindow(element) || isDocument(element)
+        ? element
+        : isNodeCollection(element) || isJQuery(element)
+            ? element[0]
+            : isArray(element)
+                ? toNode(element[0])
+                : null;
+}
+
+var arrayProto = Array.prototype;
+function toNodes(element) {
+    return isNode(element)
+        ? [element]
+        : isNodeCollection(element)
+            ? arrayProto.slice.call(element)
+            : isArray(element)
+                ? element.map(toNode).filter(Boolean)
+                : isJQuery(element)
+                    ? element.toArray()
+                    : [];
+}
+
+function toList(value) {
+    return isArray(value)
+        ? value
+        : isString(value)
+            ? value.split(/,(?![^(]*\))/).map(function (value) { return isNumeric(value)
+                ? toNumber(value)
+                : toBoolean(value.trim()); })
+            : [value];
+}
+
+function toMs(time) {
+    return !time
+        ? 0
+        : endsWith(time, 'ms')
+            ? toFloat(time)
+            : toFloat(time) * 1000;
+}
+
+function swap(value, a, b) {
+    return value.replace(new RegExp((a + "|" + b), 'mg'), function (match) {
+        return match === a ? b : a;
+    });
+}
+
+var assign = Object.assign || function (target) {
+    var args = [], len = arguments.length - 1;
+    while ( len-- > 0 ) args[ len ] = arguments[ len + 1 ];
+
+    target = Object(target);
+    for (var i = 0; i < args.length; i++) {
+        var source = args[i];
+        if (source !== null) {
+            for (var key in source) {
+                if (hasOwn(source, key)) {
+                    target[key] = source[key];
+                }
+            }
+        }
+    }
+    return target;
+};
+
+function each(obj, cb) {
+    for (var key in obj) {
+        if (cb.call(obj[key], obj[key], key) === false) {
+            break;
+        }
+    }
+}
+
+function sortBy(collection, prop) {
+    return collection.sort(function (a, b) { return a[prop] > b[prop]
+            ? 1
+            : b[prop] > a[prop]
+                ? -1
+                : 0; }
+    );
+}
+
+function clamp(number, min, max) {
+    if ( min === void 0 ) min = 0;
+    if ( max === void 0 ) max = 1;
+
+    return Math.min(Math.max(number, min), max);
+}
+
+function noop() {}
+
+function intersectRect(r1, r2) {
+    return r1.left <= r2.right &&
+        r2.left <= r1.right &&
+        r1.top <= r2.bottom &&
+        r2.top <= r1.bottom;
+}
+
+function pointInRect(point, rect) {
+    return intersectRect({top: point.y, bottom: point.y, left: point.x, right: point.x}, rect);
+}
+
+var Dimensions = {
+
+    ratio: function ratio(dimensions, prop, value) {
+
+        var aProp = prop === 'width' ? 'height' : 'width';
+
+        return ( obj = {}, obj[aProp] = Math.round(value * dimensions[aProp] / dimensions[prop]), obj[prop] = value, obj );
+        var obj;
+    },
+
+    contain: function contain(dimensions, maxDimensions) {
+        var this$1 = this;
+
+        dimensions = assign({}, dimensions);
+
+        each(dimensions, function (_, prop) { return dimensions = dimensions[prop] > maxDimensions[prop]
+            ? this$1.ratio(dimensions, prop, maxDimensions[prop])
+            : dimensions; }
+        );
+
+        return dimensions;
+    },
+
+    cover: function cover(dimensions, maxDimensions) {
+        var this$1 = this;
+
+        dimensions = this.contain(dimensions, maxDimensions);
+
+        each(dimensions, function (_, prop) { return dimensions = dimensions[prop] < maxDimensions[prop]
+            ? this$1.ratio(dimensions, prop, maxDimensions[prop])
+            : dimensions; }
+        );
+
+        return dimensions;
+    }
+
+};
+
+function attr(element, name, value) {
+
+    if (isObject(name)) {
+        for (var key in name) {
+            attr(element, key, name[key]);
+        }
+        return;
+    }
+
+    if (isUndefined(value)) {
+        element = toNode(element);
+        return element && element.getAttribute(name);
+    } else {
+        toNodes(element).forEach(function (element) {
+
+            if (isFunction(value)) {
+                value = value.call(element, attr(element, name));
+            }
+
+            if (value === null) {
+                removeAttr(element, name);
+            } else {
+                element.setAttribute(name, value);
+            }
+        });
+    }
+
+}
+
+function hasAttr(element, name) {
+    return toNodes(element).some(function (element) { return element.hasAttribute(name); });
+}
+
+function removeAttr(element, name) {
+    element = toNodes(element);
+    name.split(' ').forEach(function (name) { return element.forEach(function (element) { return element.removeAttribute(name); }
+        ); }
+    );
+}
+
+function filterAttr(element, attribute, pattern, replacement) {
+    attr(element, attribute, function (value) { return value ? value.replace(pattern, replacement) : value; });
+}
+
+function data(element, attribute) {
+    for (var i = 0, attrs = [attribute, ("data-" + attribute)]; i < attrs.length; i++) {
+        if (hasAttr(element, attrs[i])) {
+            return attr(element, attrs[i]);
+        }
+    }
+}
+
 /* global setImmediate */
+var Promise = 'Promise' in window ? window.Promise : PromiseFn;
+
+var Deferred = function Deferred() {
+    var this$1 = this;
+
+    this.promise = new Promise(function (resolve, reject) {
+        this$1.reject = reject;
+        this$1.resolve = resolve;
+    });
+};
+
 /**
  * Promises/A+ polyfill v1.1.4 (https://github.com/bramstein/promis)
  */
@@ -17,7 +350,7 @@ var PENDING = 2;
 
 var async = 'setImmediate' in window ? setImmediate : setTimeout;
 
-function Promise$1(executor) {
+function PromiseFn(executor) {
 
     this.state = PENDING;
     this.value = undefined;
@@ -36,21 +369,22 @@ function Promise$1(executor) {
     }
 }
 
-Promise$1.reject = function (r) {
-    return new Promise$1(function (resolve, reject) {
+PromiseFn.reject = function (r) {
+    return new PromiseFn(function (resolve, reject) {
         reject(r);
     });
 };
 
-Promise$1.resolve = function (x) {
-    return new Promise$1(function (resolve, reject) {
+PromiseFn.resolve = function (x) {
+    return new PromiseFn(function (resolve, reject) {
         resolve(x);
     });
 };
 
-Promise$1.all = function all(iterable) {
-    return new Promise$1(function (resolve, reject) {
-        var count = 0, result = [];
+PromiseFn.all = function all(iterable) {
+    return new PromiseFn(function (resolve, reject) {
+        var result = [];
+        var count = 0;
 
         if (iterable.length === 0) {
             resolve(result);
@@ -68,20 +402,20 @@ Promise$1.all = function all(iterable) {
         }
 
         for (var i = 0; i < iterable.length; i += 1) {
-            Promise$1.resolve(iterable[i]).then(resolver(i), reject);
+            PromiseFn.resolve(iterable[i]).then(resolver(i), reject);
         }
     });
 };
 
-Promise$1.race = function race(iterable) {
-    return new Promise$1(function (resolve, reject) {
+PromiseFn.race = function race(iterable) {
+    return new PromiseFn(function (resolve, reject) {
         for (var i = 0; i < iterable.length; i += 1) {
-            Promise$1.resolve(iterable[i]).then(resolve, reject);
+            PromiseFn.resolve(iterable[i]).then(resolve, reject);
         }
     });
 };
 
-var p = Promise$1.prototype;
+var p = PromiseFn.prototype;
 
 p.resolve = function resolve(x) {
     var promise = this;
@@ -144,11 +478,11 @@ p.notify = function notify() {
     async(function () {
         if (this$1.state !== PENDING) {
             while (this$1.deferred.length) {
-                var deferred = this$1.deferred.shift(),
-                    onResolved = deferred[0],
-                    onRejected = deferred[1],
-                    resolve = deferred[2],
-                    reject = deferred[3];
+                var ref = this$1.deferred.shift();
+                var onResolved = ref[0];
+                var onRejected = ref[1];
+                var resolve = ref[2];
+                var reject = ref[3];
 
                 try {
                     if (this$1.state === RESOLVED) {
@@ -175,7 +509,7 @@ p.notify = function notify() {
 p.then = function then(onResolved, onRejected) {
     var this$1 = this;
 
-    return new Promise$1(function (resolve, reject) {
+    return new PromiseFn(function (resolve, reject) {
         this$1.deferred.push([onResolved, onRejected, resolve, reject]);
         this$1.notify();
     });
@@ -190,14 +524,15 @@ var win = window;
 var doc = document;
 var docEl = doc.documentElement;
 
+var isRtl = attr(docEl, 'dir') === 'rtl';
+
 var Observer = win.MutationObserver;
-var requestAnimationFrame$1 = win.requestAnimationFrame;
 
 var hasTouchEvents = 'ontouchstart' in win;
 var hasPointerEvents = win.PointerEvent;
-var hasTouch = 'ontouchstart' in win
+var hasTouch = hasTouchEvents
     || win.DocumentTouch && doc instanceof DocumentTouch
-    || navigator.pointerEnabled && navigator.maxTouchPoints; // IE >=11
+    || navigator.maxTouchPoints; // IE >=11
 
 var pointerDown = !hasTouch ? 'mousedown' : ("mousedown " + (hasTouchEvents ? 'touchstart' : 'pointerdown'));
 var pointerMove = !hasTouch ? 'mousemove' : ("mousemove " + (hasTouchEvents ? 'touchmove' : 'pointermove'));
@@ -207,7 +542,7 @@ var pointerLeave = hasTouch && hasPointerEvents ? 'pointerleave' : 'mouseleave';
 
 function getImage(src) {
 
-    return new Promise$1(function (resolve, reject) {
+    return new Promise(function (resolve, reject) {
         var img = new Image();
 
         img.onerror = reject;
@@ -235,1008 +570,13 @@ var supports = {};
 
 })();
 
-function attr(element, name, value) {
-
-    if (isObject(name)) {
-        for (var key in name) {
-            attr(element, key, name[key]);
-        }
-        return;
-    }
-
-    if (isUndefined(value)) {
-        element = toNode(element);
-        return element && element.getAttribute(name);
-    } else {
-        toNodes(element).forEach(function (element) {
-
-            if (isFunction(value)) {
-                value = value.call(element, attr(element, name));
-            }
-
-            if (value === null) {
-                removeAttr(element, name);
-            } else {
-                element.setAttribute(name, value);
-            }
-        });
-    }
-
-}
-
-function hasAttr(element, name) {
-    return toNodes(element).some(function (element) { return element.hasAttribute(name); });
-}
-
-function removeAttr(element, name) {
-    element = toNodes(element);
-    name.split(' ').forEach(function (name) { return element.forEach(function (element) { return element.removeAttribute(name); }
-        ); }
-    );
-}
-
-function filterAttr(element, attribute, pattern, replacement) {
-    attr(element, attribute, function (value) { return value ? value.replace(pattern, replacement) : value; });
-}
-
-function data(element, attribute) {
-    for (var i = 0, attrs = [attribute, ("data-" + attribute)]; i < attrs.length; i++) {
-        if (hasAttr(element, attrs[i])) {
-            return attr(element, attrs[i]);
-        }
-    }
-}
-
-function addClass(element) {
-    var args = [], len = arguments.length - 1;
-    while ( len-- > 0 ) args[ len ] = arguments[ len + 1 ];
-
-    apply(element, args, 'add');
-}
-
-function removeClass(element) {
-    var args = [], len = arguments.length - 1;
-    while ( len-- > 0 ) args[ len ] = arguments[ len + 1 ];
-
-    apply(element, args, 'remove');
-}
-
-function removeClasses(element, cls) {
-    filterAttr(element, 'class', new RegExp(("(^|\\s)" + cls + "(?!\\S)"), 'g'), '');
-}
-
-function replaceClass(element) {
-    var args = [], len = arguments.length - 1;
-    while ( len-- > 0 ) args[ len ] = arguments[ len + 1 ];
-
-    args[0] && removeClass(element, args[0]);
-    args[1] && addClass(element, args[1]);
-}
-
-function hasClass(element, cls) {
-    return supports.ClassList && toNodes(element).some(function (element) { return element.classList.contains(cls); });
-}
-
-function toggleClass(element) {
-    var args = [], len = arguments.length - 1;
-    while ( len-- > 0 ) args[ len ] = arguments[ len + 1 ];
-
-
-    if (!supports.ClassList || !args.length) {
-        return;
-    }
-
-    args = getArgs$1(args);
-
-    var force = !isString(args[args.length - 1]) ? args.pop() : undefined;
-
-    args = args.filter(Boolean);
-
-    toNodes(element).forEach(function (ref) {
-        var classList = ref.classList;
-
-        for (var i = 0; i < args.length; i++) {
-            supports.Force
-                ? classList.toggle(args[i], force)
-                : (classList[(!isUndefined(force) ? force : !classList.contains(args[i])) ? 'add' : 'remove'](args[i]));
-        }
-    });
-
-}
-
-function apply(element, args, fn) {
-    args = getArgs$1(args).filter(Boolean);
-
-    supports.ClassList && args.length && toNodes(element).forEach(function (ref) {
-        var classList = ref.classList;
-
-        supports.Multiple
-            ? classList[fn].apply(classList, args)
-            : args.forEach(function (cls) { return classList[fn](cls); });
-    });
-}
-
-function getArgs$1(args) {
-    return args.reduce(function (args, arg) { return args.concat.call(args, isString(arg) && includes(arg, ' ') ? arg.trim().split(' ') : arg); }
-        , []);
-}
-
-var cssNumber = {
-    'animation-iteration-count': true,
-    'column-count': true,
-    'fill-opacity': true,
-    'flex-grow': true,
-    'flex-shrink': true,
-    'font-weight': true,
-    'line-height': true,
-    'opacity': true,
-    'order': true,
-    'orphans': true,
-    'widows': true,
-    'z-index': true,
-    'zoom': true
-};
-
-function css(element, property, value) {
-
-    return toNodes(element).map(function (element) {
-
-        if (isString(property)) {
-
-            property = propName(property);
-
-            if (isUndefined(value)) {
-                return getStyle(element, property);
-            } else if (!value && value !== 0) {
-                element.style.removeProperty(property);
-            } else {
-                element.style[property] = isNumeric(value) && !cssNumber[property] ? (value + "px") : value;
-            }
-
-        } else if (isArray(property)) {
-
-            var styles = getStyles(element);
-
-            return property.reduce(function (props, property) {
-                props[property] = propName(styles[property]);
-                return props;
-            }, {});
-
-        } else if (isObject(property)) {
-            each(property, function (value, property) { return css(element, property, value); });
-        }
-
-        return element;
-
-    })[0];
-
-}
-
-function getStyles(element, pseudoElt) {
-    element = toNode(element);
-    return element.ownerDocument.defaultView.getComputedStyle(element, pseudoElt);
-}
-
-function getStyle(element, property, pseudoElt) {
-    return getStyles(element, pseudoElt)[property];
-}
-
-var vars$1 = {};
-
-function getCssVar(name) {
-
-    if (!(name in vars$1)) {
-
-        /* usage in css:  .var-name:before { content:"xyz" } */
-
-        var element = append(docEl, doc.createElement('div'));
-
-        addClass(element, ("var-" + name));
-
-        try {
-
-            vars$1[name] = getStyle(element, 'content', ':before').replace(/^["'](.*)["']$/, '$1');
-            vars$1[name] = JSON.parse(vars$1[name]);
-
-        } catch (e) {}
-
-        docEl.removeChild(element);
-
-    }
-
-    return vars$1[name];
-
-}
-
-var cssProps = {};
-
-function propName(name) {
-
-    var ret = cssProps[name];
-    if (!ret) {
-        ret = cssProps[name] = vendorPropName(name) || name;
-    }
-    return ret;
-}
-
-var cssPrefixes = ['webkit', 'moz', 'ms'];
-var style = doc.createElement('_').style;
-
-function vendorPropName(name) {
-
-    name = hyphenate(name);
-
-    if (name in style) {
-        return name;
-    }
-
-    var i = cssPrefixes.length, prefixedName;
-
-    while (i--) {
-        prefixedName = "-" + (cssPrefixes[i]) + "-" + name;
-        if (prefixedName in style) {
-            return prefixedName;
-        }
-    }
-}
-
-var dirs = {
-    width: ['x', 'left', 'right'],
-    height: ['y', 'top', 'bottom']
-};
-
-function positionAt(element, target, elAttach, targetAttach, elOffset, targetOffset, flip, boundary) {
-
-    elAttach = getPos(elAttach);
-    targetAttach = getPos(targetAttach);
-
-    var flipped = {element: elAttach, target: targetAttach};
-
-    if (!element || !target) {
-        return flipped;
-    }
-
-    var dim = getDimensions(element),
-        targetDim = getDimensions(target),
-        position = targetDim;
-
-    moveTo(position, elAttach, dim, -1);
-    moveTo(position, targetAttach, targetDim, 1);
-
-    elOffset = getOffsets(elOffset, dim.width, dim.height);
-    targetOffset = getOffsets(targetOffset, targetDim.width, targetDim.height);
-
-    elOffset['x'] += targetOffset['x'];
-    elOffset['y'] += targetOffset['y'];
-
-    position.left += elOffset['x'];
-    position.top += elOffset['y'];
-
-    boundary = getDimensions(boundary || getWindow(element));
-
-    if (flip) {
-        each(dirs, function (ref, prop) {
-            var dir = ref[0];
-            var align = ref[1];
-            var alignFlip = ref[2];
-
-
-            if (!(flip === true || includes(flip, dir))) {
-                return;
-            }
-
-            var elemOffset = elAttach[dir] === align
-                    ? -dim[prop]
-                    : elAttach[dir] === alignFlip
-                        ? dim[prop]
-                        : 0,
-                targetOffset = targetAttach[dir] === align
-                    ? targetDim[prop]
-                    : targetAttach[dir] === alignFlip
-                        ? -targetDim[prop]
-                        : 0;
-
-            if (position[align] < boundary[align] || position[align] + dim[prop] > boundary[alignFlip]) {
-
-                var centerOffset = dim[prop] / 2,
-                    centerTargetOffset = targetAttach[dir] === 'center' ? -targetDim[prop] / 2 : 0;
-
-                elAttach[dir] === 'center' && (
-                    apply(centerOffset, centerTargetOffset)
-                    || apply(-centerOffset, -centerTargetOffset)
-                ) || apply(elemOffset, targetOffset);
-
-            }
-
-            function apply(elemOffset, targetOffset) {
-
-                var newVal = position[align] + elemOffset + targetOffset - elOffset[dir] * 2;
-
-                if (newVal >= boundary[align] && newVal + dim[prop] <= boundary[alignFlip]) {
-                    position[align] = newVal;
-
-                    ['element', 'target'].forEach(function (el) {
-                        flipped[el][dir] = !elemOffset
-                            ? flipped[el][dir]
-                            : flipped[el][dir] === dirs[prop][1]
-                                ? dirs[prop][2]
-                                : dirs[prop][1];
-                    });
-
-                    return true;
-                }
-
-            }
-
-        });
-    }
-
-    offset(element, position);
-
-    return flipped;
-}
-
-function offset(element, coordinates) {
-
-    element = toNode(element);
-
-    if (coordinates) {
-
-        var currentOffset = offset(element),
-            pos = css(element, 'position');
-
-        ['left', 'top'].forEach(function (prop) {
-            if (prop in coordinates) {
-                var value = css(element, prop);
-                element.style[prop] = ((coordinates[prop] - currentOffset[prop])
-                    + toFloat(pos === 'absolute' && value === 'auto' ? position(element)[prop] : value)) + "px";
-            }
-        });
-
-        return;
-    }
-
-    return getDimensions(element);
-}
-
-function getDimensions(element) {
-
-    element = toNode(element);
-
-    var ref = getWindow(element);
-    var top = ref.pageYOffset;
-    var left = ref.pageXOffset;
-
-    if (isWindow(element)) {
-
-        var height = element.innerHeight,
-            width = element.innerWidth;
-
-        return {
-            top: top,
-            left: left,
-            height: height,
-            width: width,
-            bottom: top + height,
-            right: left + width,
-        };
-    }
-
-    var display = false;
-    if (!isVisible(element)) {
-        display = element.style.display;
-        element.style.display = 'block';
-    }
-
-    var rect = element.getBoundingClientRect();
-
-    if (display !== false) {
-        element.style.display = display;
-    }
-
-    return {
-        height: rect.height,
-        width: rect.width,
-        top: rect.top + top,
-        left: rect.left + left,
-        bottom: rect.bottom + top,
-        right: rect.right + left,
-    };
-}
-
-function position(element) {
-    element = toNode(element);
-
-    var parent = offsetParent(element),
-        parentOffset = parent === docEl$1(element) ? {top: 0, left: 0} : offset(parent);
-
-    return ['top', 'left'].reduce(function (props, prop) {
-        var propName = ucfirst(prop);
-        props[prop] -= parentOffset[prop]
-            + (toFloat(css(element, ("margin" + propName))) || 0)
-            + (toFloat(css(parent, ("border" + propName + "Width"))) || 0);
-        return props;
-    }, offset(element));
-}
-
-function offsetParent(element) {
-
-    var parent = toNode(element).offsetParent;
-
-    while (parent && css(parent, 'position') === 'static') {
-        parent = parent.offsetParent;
-    }
-
-    return parent || docEl$1(element);
-}
-
-var height = dimension('height');
-var width = dimension('width');
-
-function dimension(prop) {
-    var propName = ucfirst(prop);
-    return function (element, value) {
-
-        element = toNode(element);
-
-        if (isUndefined(value)) {
-
-            if (isWindow(element)) {
-                return element[("inner" + propName)];
-            }
-
-            if (isDocument(element)) {
-                var doc = element.documentElement;
-                return Math.max(doc.offsetHeight, doc.scrollHeight);
-            }
-
-            value = css(element, prop);
-            value = value === 'auto' ? element[("offset" + propName)] : toFloat(value) || 0;
-
-            return getContentSize(prop, element, value);
-
-        } else {
-
-            css(element, prop, !value && value !== 0
-                ? ''
-                : getContentSize(prop, element, value) + 'px'
-            );
-
-        }
-
-    };
-}
-
-function getContentSize(prop, element, value) {
-    return css(element, 'boxSizing') === 'border-box' ? dirs[prop].slice(1).map(ucfirst).reduce(function (value, prop) { return value
-            - toFloat(css(element, ("padding" + prop)))
-            - toFloat(css(element, ("border" + prop + "Width"))); }
-        , value) : value;
-}
-
-function getWindow(element) {
-    return isWindow(element) ? element : document$1(element).defaultView;
-}
-
-function moveTo(position, attach, dim, factor) {
-    each(dirs, function (ref, prop) {
-        var dir = ref[0];
-        var align = ref[1];
-        var alignFlip = ref[2];
-
-        if (attach[dir] === alignFlip) {
-            position[align] += dim[prop] * factor;
-        } else if (attach[dir] === 'center') {
-            position[align] += dim[prop] * factor / 2;
-        }
-    });
-}
-
-function getPos(pos) {
-
-    var x = /left|center|right/, y = /top|center|bottom/;
-
-    pos = (pos || '').split(' ');
-
-    if (pos.length === 1) {
-        pos = x.test(pos[0])
-            ? pos.concat(['center'])
-            : y.test(pos[0])
-                ? ['center'].concat(pos)
-                : ['center', 'center'];
-    }
-
-    return {
-        x: x.test(pos[0]) ? pos[0] : 'center',
-        y: y.test(pos[1]) ? pos[1] : 'center'
-    };
-}
-
-function getOffsets(offsets, width, height) {
-
-    var ref = (offsets || '').split(' ');
-    var x = ref[0];
-    var y = ref[1];
-
-    return {
-        x: x ? toFloat(x) * (endsWith(x, '%') ? width / 100 : 1) : 0,
-        y: y ? toFloat(y) * (endsWith(y, '%') ? height / 100 : 1) : 0
-    };
-}
-
-function flipPosition(pos) {
-    switch (pos) {
-        case 'left':
-            return 'right';
-        case 'right':
-            return 'left';
-        case 'top':
-            return 'bottom';
-        case 'bottom':
-            return 'top';
-        default:
-            return pos;
-    }
-}
-
-function document$1(element) {
-    return toNode(element).ownerDocument;
-}
-
-function docEl$1(element) {
-    return document$1(element).documentElement;
-}
-
-var isRtl = attr(docEl, 'dir') === 'rtl';
-
-function isReady() {
-    return doc.readyState === 'complete' || doc.readyState !== 'loading' && !docEl.doScroll;
-}
-
-function ready(fn) {
-
-    if (isReady()) {
-        fn();
-        return;
-    }
-
-    var handle = function () {
-            unbind1();
-            unbind2();
-            fn();
-        },
-        unbind1 = on(doc, 'DOMContentLoaded', handle),
-        unbind2 = on(win, 'load', handle);
-}
-
-function transition(element, props, duration, transition) {
-    if ( duration === void 0 ) duration = 400;
-    if ( transition === void 0 ) transition = 'linear';
-
-
-    return Promise$$1.all(toNodes(element).map(function (element) { return new Promise$$1(function (resolve, reject) {
-
-            for (var name in props) {
-                var value = css(element, name);
-                if (value === '') {
-                    css(element, name, value);
-                }
-            }
-
-            var timer = setTimeout(function () { return trigger(element, 'transitionend'); }, duration);
-
-            once(element, 'transitionend transitioncanceled', function (ref) {
-                var type = ref.type;
-
-                clearTimeout(timer);
-                removeClass(element, 'uk-transition');
-                css(element, 'transition', '');
-                type === 'transitioncanceled' ? reject() : resolve();
-            }, false, function (ref) {
-                var target = ref.target;
-
-                return element === target;
-            });
-
-            addClass(element, 'uk-transition');
-            css(element, assign({transition: ("all " + duration + "ms " + transition)}, props));
-
-        }); }
-    ));
-
-}
-
-var Transition = {
-
-    start: transition,
-
-    stop: function stop(element) {
-        trigger(element, 'transitionend');
-        return Promise$$1.resolve();
-    },
-
-    cancel: function cancel(element) {
-        trigger(element, 'transitioncanceled');
-    },
-
-    inProgress: function inProgress(element) {
-        return hasClass(element, 'uk-transition');
-    }
-
-};
-
-var animationPrefix = 'uk-animation-';
-var clsCancelAnimation = 'uk-cancel-animation';
-
-function animate(element, animation, duration, origin, out) {
-    var arguments$1 = arguments;
-    if ( duration === void 0 ) duration = 200;
-
-
-    return Promise$$1.all(toNodes(element).map(function (element) { return new Promise$$1(function (resolve, reject) {
-
-            if (hasClass(element, clsCancelAnimation)) {
-                requestAnimationFrame(function () { return Promise$$1.resolve().then(function () { return animate.apply(null, arguments$1).then(resolve, reject); }
-                    ); }
-                );
-                return;
-            }
-
-            var cls = animation + " " + animationPrefix + (out ? 'leave' : 'enter');
-
-            if (startsWith(animation, animationPrefix)) {
-
-                if (origin) {
-                    cls += " " + animationPrefix + origin;
-                }
-
-                if (out) {
-                    cls += " " + animationPrefix + "reverse";
-                }
-
-            }
-
-            reset();
-
-            once(element, 'animationend animationcancel', function (ref) {
-                var type = ref.type;
-
-
-                var hasReset = false;
-
-                if (type === 'animationcancel') {
-                    reject();
-                    reset();
-                } else {
-                    resolve();
-                    Promise$$1.resolve().then(function () {
-                        hasReset = true;
-                        reset();
-                    });
-                }
-
-                requestAnimationFrame(function () {
-                    if (!hasReset) {
-                        addClass(element, clsCancelAnimation);
-
-                        requestAnimationFrame(function () { return removeClass(element, clsCancelAnimation); });
-                    }
-                });
-
-            }, false, function (ref) {
-                var target = ref.target;
-
-                return element === target;
-            });
-
-            css(element, 'animationDuration', (duration + "ms"));
-            addClass(element, cls);
-
-            function reset() {
-                css(element, 'animationDuration', '');
-                removeClasses(element, (animationPrefix + "\\S*"));
-            }
-
-        }); }
-    ));
-
-}
-
-var inProgress = new RegExp((animationPrefix + "(enter|leave)"));
-var Animation = {
-
-    in: function in$1(element, animation, duration, origin) {
-        return animate(element, animation, duration, origin, false);
-    },
-
-    out: function out(element, animation, duration, origin) {
-        return animate(element, animation, duration, origin, true);
-    },
-
-    inProgress: function inProgress$1(element) {
-        return inProgress.test(attr(element, 'class'));
-    },
-
-    cancel: function cancel(element) {
-        trigger(element, 'animationcancel');
-    }
-
-};
-
-function isInView(element, top, left) {
-    if ( top === void 0 ) top = 0;
-    if ( left === void 0 ) left = 0;
-
-    return intersectRect(toNode(element).getBoundingClientRect(), {
-        top: top,
-        left: left,
-        bottom: top + height(win),
-        right: left + width(win)
-    });
-}
-
-function scrolledOver(element) {
-
-    element = toNode(element);
-
-    var elHeight = element.offsetHeight,
-        top = positionTop(element),
-        vp = height(win),
-        vh = vp + Math.min(0, top - vp),
-        diff = Math.max(0, vp - (height(doc) - (top + elHeight)));
-
-    return clamp(((vh + win.pageYOffset - top) / ((vh + (elHeight - (diff < vp ? diff : 0))) / 100)) / 100);
-}
-
-function positionTop(element) {
-    var top = 0;
-
-    do {
-
-        top += element.offsetTop;
-
-    } while (element = element.offsetParent);
-
-    return top;
-}
-
-function getIndex(i, elements, current) {
-    if ( current === void 0 ) current = 0;
-
-
-    elements = toNodes(elements);
-
-    var length = elements.length;
-
-    i = (isNumeric(i)
-        ? toNumber(i)
-        : i === 'next'
-            ? current + 1
-            : i === 'previous'
-                ? current - 1
-                : index(elements, i)
-    ) % length;
-
-    return i < 0 ? i + length : i;
-}
-
-var voidElements = {
-    area: true,
-    base: true,
-    br: true,
-    col: true,
-    embed: true,
-    hr: true,
-    img: true,
-    input: true,
-    keygen: true,
-    link: true,
-    menuitem: true,
-    meta: true,
-    param: true,
-    source: true,
-    track: true,
-    wbr: true
-};
-function isVoidElement(element) {
-    return voidElements[toNode(element).tagName.toLowerCase()];
-}
-
-var Dimensions = {
-
-    ratio: function ratio(dimensions, prop, value) {
-
-        var aProp = prop === 'width' ? 'height' : 'width';
-
-        return ( obj = {}, obj[aProp] = Math.round(value * dimensions[aProp] / dimensions[prop]), obj[prop] = value, obj );
-        var obj;
-    },
-
-    contain: function contain(dimensions, maxDimensions) {
-        var this$1 = this;
-
-        dimensions = assign({}, dimensions);
-
-        each(dimensions, function (_, prop) { return dimensions = dimensions[prop] > maxDimensions[prop]
-            ? this$1.ratio(dimensions, prop, maxDimensions[prop])
-            : dimensions; }
-        );
-
-        return dimensions;
-    },
-
-    cover: function cover(dimensions, maxDimensions) {
-        var this$1 = this;
-
-        dimensions = this.contain(dimensions, maxDimensions);
-
-        each(dimensions, function (_, prop) { return dimensions = dimensions[prop] < maxDimensions[prop]
-            ? this$1.ratio(dimensions, prop, maxDimensions[prop])
-            : dimensions; }
-        );
-
-        return dimensions;
-    }
-
-};
-
-function preventClick() {
-
-    var timer = setTimeout(function () { return trigger(doc, 'click'); }, 0);
-
-    once(doc, 'click', function (e) {
-        e.preventDefault();
-        e.stopImmediatePropagation();
-
-        clearTimeout(timer);
-    }, true);
-
-}
-
-function isVisible(element) {
-    return toNodes(element).some(function (element) { return element.offsetHeight; });
-}
-
-var selInput = 'input,select,textarea,button';
-function isInput(element) {
-    return toNodes(element).some(function (element) { return matches(element, selInput); });
-}
-
-function empty(element) {
-    element = toNode(element);
-    element.innerHTML = '';
-    return element;
-}
-
-function html(parent, html) {
-    parent = toNode(parent);
-    return isUndefined(html)
-        ? parent.innerHTML
-        : append(parent.hasChildNodes() ? empty(parent) : parent, html);
-}
-
-function prepend(parent, element) {
-
-    parent = toNode(parent);
-
-    if (!parent.hasChildNodes()) {
-        return append(parent, element);
-    } else {
-        return insertNodes(element, function (element) { return parent.insertBefore(element, parent.firstChild); });
-    }
-}
-
-function append(parent, element) {
-    parent = toNode(parent);
-    return insertNodes(element, function (element) { return parent.appendChild(element); });
-}
-
-function before(ref, element) {
-    ref = toNode(ref);
-    return insertNodes(element, function (element) { return ref.parentNode.insertBefore(element, ref); });
-}
-
-function after(ref, element) {
-    ref = toNode(ref);
-    return insertNodes(element, function (element) { return ref.nextSibling
-        ? before(ref.nextSibling, element)
-        : append(ref.parentNode, element); }
-    );
-}
-
-function insertNodes(element, fn) {
-    element = isString(element) ? fragment(element) : element;
-    return element ? 'length' in element ? toNodes(element).map(fn) : fn(element) : null;
-}
-
-function remove(element) {
-    toNodes(element).map(function (element) { return element.parentNode && element.parentNode.removeChild(element); });
-}
-
-function wrapAll(element, structure) {
-
-    structure = toNode(before(element, structure));
-
-    while (structure.firstChild) {
-        structure = structure.firstChild;
-    }
-
-    append(structure, element);
-
-    return structure;
-}
-
-function wrapInner(element, structure) {
-    return toNodes(toNodes(element).map(function (element) { return element.hasChildNodes ? wrapAll(toNodes(element.childNodes), structure) : append(element, structure); }
-    ));
-}
-
-function unwrap(element) {
-    toNodes(element)
-        .map(function (element) { return element.parentNode; })
-        .filter(function (value, index, self) { return self.indexOf(value) === index; })
-        .forEach(function (parent) {
-            before(parent, parent.childNodes);
-            remove(parent);
-        });
-}
-
-var fragmentRE = /^\s*<(\w+|!)[^>]*>/;
-var singleTagRE = /^<(\w+)\s*\/?>(?:<\/\1>)?$/;
-
-function fragment(html) {
-
-    var matches$$1;
-
-    if (matches$$1 = singleTagRE.exec(html)) {
-        return doc.createElement(matches$$1[1]);
-    }
-
-    var container = doc.createElement('div');
-    if (fragmentRE.test(html)) {
-        container.insertAdjacentHTML('beforeend', html.trim());
-    } else {
-        container.textContent = html;
-    }
-
-    return container.childNodes.length > 1 ? toNodes(container.childNodes) : container.firstChild;
-
-}
-
-function index(element, ref) {
-    return ref
-        ? toNodes(element).indexOf(toNode(ref))
-        : toNodes((element = toNode(element)) && element.parentNode.children).indexOf(element);
-}
-
-var arrayProto = Array.prototype;
-
-function $(selector, context) {
-    return !isString(selector)
-        ? toNode(selector)
-        : isHtml(selector)
-            ? toNode(fragment(selector))
-            : find(selector, context);
-}
-
-function $$(selector, context) {
-    return !isString(selector)
-        ? toNodes(selector)
-        : isHtml(selector)
-            ? toNodes(fragment(selector))
-            : findAll(selector, context);
-}
-
-function isHtml(str) {
-    return str[0] === '<' || str.match(/^\s*</);
-}
-
 function query(selector, context) {
-    return $(selector, isContextSelector(selector) ? context : doc);
+    return toNode(selector) || find(selector, isContextSelector(selector) ? context : doc);
 }
 
 function queryAll(selector, context) {
-    return $$(selector, isContextSelector(selector) ? context : doc);
+    var nodes = toNodes(selector);
+    return nodes.length && nodes || findAll(selector, isContextSelector(selector) ? context : doc);
 }
 
 function find(selector, context) {
@@ -1304,20 +644,10 @@ function _query(selector, context, queryFn) {
 
     } finally {
 
-        removes && removes.forEach(function (remove$$1) { return remove$$1(); });
+        removes && removes.forEach(function (remove) { return remove(); });
 
     }
 
-}
-
-function filter(element, selector) {
-    return $$(element).filter(function (element) { return matches(element, selector); });
-}
-
-function within(element, selector) {
-    return !isString(selector)
-        ? element === selector || toNode(selector).contains(toNode(element))
-        : matches(element, selector) || closest(element, selector);
 }
 
 var contextSelectorRe = /(^|,)\s*[!>+~]/;
@@ -1328,7 +658,7 @@ function isContextSelector(selector) {
 }
 
 var elProto = Element.prototype;
-var matchesFn = elProto.matches || elProto.msMatchesSelector;
+var matchesFn = elProto.matches || elProto.webkitMatchesSelector || elProto.msMatchesSelector;
 
 function matches(element, selector) {
     return toNodes(element).some(function (element) { return matchesFn.call(element, selector); });
@@ -1360,7 +690,8 @@ function closest(element, selector) {
 }
 
 function parents(element, selector) {
-    var elements = [], parent = toNode(element).parentNode;
+    var elements = [];
+    var parent = toNode(element).parentNode;
 
     while (parent && parent.nodeType === 1) {
 
@@ -1374,43 +705,50 @@ function parents(element, selector) {
     return elements;
 }
 
-function isJQuery(obj) {
-    return isObject(obj) && !!obj.jquery;
-}
-
-function isNode(element) {
-    return element instanceof Node || isObject(element) && element.nodeType === 1;
-}
-
-function isNodeCollection(element) {
-    return element instanceof NodeList || element instanceof HTMLCollection;
-}
-
-function toNode(element) {
-    return isNode(element) || isWindow(element) || isDocument(element)
-        ? element
-        : isNodeCollection(element) || isJQuery(element)
-            ? element[0]
-            : isArray(element)
-                ? toNode(element[0])
-                : null;
-}
-
-function toNodes(element) {
-    return isNode(element)
-        ? [element]
-        : isNodeCollection(element)
-            ? arrayProto.slice.call(element)
-            : isArray(element)
-                ? element.map(toNode).filter(Boolean)
-                : isJQuery(element)
-                    ? element.toArray()
-                    : [];
-}
-
 var escapeFn = win.CSS && CSS.escape || function (css) { return css.replace(/([^\x7f-\uFFFF\w-])/g, function (match) { return ("\\" + match); }); };
 function escape(css) {
     return isString(css) ? escapeFn.call(null, css) : '';
+}
+
+var voidElements = {
+    area: true,
+    base: true,
+    br: true,
+    col: true,
+    embed: true,
+    hr: true,
+    img: true,
+    input: true,
+    keygen: true,
+    link: true,
+    menuitem: true,
+    meta: true,
+    param: true,
+    source: true,
+    track: true,
+    wbr: true
+};
+function isVoidElement(element) {
+    return toNodes(element).some(function (element) { return voidElements[element.tagName.toLowerCase()]; });
+}
+
+function isVisible(element) {
+    return toNodes(element).some(function (element) { return element.offsetHeight || element.getBoundingClientRect().height; });
+}
+
+var selInput = 'input,select,textarea,button';
+function isInput(element) {
+    return toNodes(element).some(function (element) { return matches(element, selInput); });
+}
+
+function filter(element, selector) {
+    return toNodes(element).filter(function (element) { return matches(element, selector); });
+}
+
+function within(element, selector) {
+    return !isString(selector)
+        ? element === selector || toNode(selector).contains(toNode(element))
+        : matches(element, selector) || closest(element, selector);
 }
 
 function on() {
@@ -1459,12 +797,12 @@ function once() {
     var useCapture = ref[4];
     var condition = ref[5];
     var off = on(element, type, selector, function (e) {
-            var result = !condition || condition(e);
-            if (result) {
-                off();
-                listener(e, result);
-            }
-        }, useCapture);
+        var result = !condition || condition(e);
+        if (result) {
+            off();
+            listener(e, result);
+        }
+    }, useCapture);
 
     return off;
 }
@@ -1479,7 +817,7 @@ function createEvent(e, bubbles, cancelable, detail) {
     if ( cancelable === void 0 ) cancelable = false;
 
     if (isString(e)) {
-        var event = doc.createEvent('CustomEvent'); // IE 11
+        var event = document.createEvent('CustomEvent'); // IE 11
         event.initCustomEvent(e, bubbles, cancelable, detail);
         e = event;
     }
@@ -1490,7 +828,7 @@ function createEvent(e, bubbles, cancelable, detail) {
 function getArgs(args) {
 
     if (isString(args[0])) {
-        args[0] = $(args[0]);
+        args[0] = find(args[0]);
     }
 
     if (isFunction(args[2])) {
@@ -1504,10 +842,10 @@ function delegate(element, selector, listener) {
 
     return function (e) {
 
-        var target = e.target,
-            current = selector[0] === '>'
-                ? $$(selector, element).reverse().filter(function (element) { return within(target, element); })[0]
-                : closest(target, selector);
+        var target = e.target;
+        var current = selector[0] === '>'
+            ? findAll(selector, element).reverse().filter(function (element) { return within(target, element); })[0]
+            : closest(target, selector);
 
         if (current) {
             e.delegate = element;
@@ -1523,9 +861,9 @@ function detail(listener) {
 }
 
 function isEventTarget(target) {
-    return 'EventTarget' in win
+    return 'EventTarget' in window
         ? target instanceof EventTarget
-        : 'addEventListener' in target;
+        : target && 'addEventListener' in target;
 }
 
 function toEventTarget(target) {
@@ -1540,236 +878,21 @@ function toEventTargets(target) {
             : toNodes(target);
 }
 
-function bind(fn, context) {
-    return function (a) {
-        var l = arguments.length;
-        return l ? l > 1 ? fn.apply(context, arguments) : fn.call(context, a) : fn.call(context);
-    };
-}
+function preventClick() {
 
-var hasOwnProperty = Object.prototype.hasOwnProperty;
+    var timer = setTimeout(once(document, 'click', function (e) {
 
-function hasOwn(obj, key) {
-    return hasOwnProperty.call(obj, key);
-}
+        e.preventDefault();
+        e.stopImmediatePropagation();
 
-var Promise$$1 = 'Promise' in window ? window.Promise : Promise$1;
+        clearTimeout(timer);
 
-var classifyRe = /(?:^|[-_\/])(\w)/g;
+    }, true));
 
-function classify(str) {
-    return str.replace(classifyRe, function (_, c) { return c ? c.toUpperCase() : ''; });
-}
-
-var hyphenateRe = /([a-z\d])([A-Z])/g;
-
-function hyphenate(str) {
-    return str
-        .replace(hyphenateRe, '$1-$2')
-        .toLowerCase();
-}
-
-var camelizeRE = /-(\w)/g;
-
-function camelize(str) {
-    return str.replace(camelizeRE, toUpper);
-}
-
-function toUpper(_, c) {
-    return c ? c.toUpperCase() : '';
-}
-
-function ucfirst(str) {
-    return str.length ? toUpper(null, str.charAt(0)) + str.slice(1) : '';
-}
-
-var strPrototype = String.prototype;
-var startsWithFn = strPrototype.startsWith || function (search) { return this.lastIndexOf(search, 0) === 0; };
-
-function startsWith(str, search) {
-    return startsWithFn.call(str, search);
-}
-
-var endsWithFn = strPrototype.endsWith || function (search) { return this.substr(-1 * search.length) === search; };
-
-function endsWith(str, search) {
-    return endsWithFn.call(str, search);
-}
-
-var includesFn = function (search) { return ~this.indexOf(search); };
-var includesStr = strPrototype.includes || includesFn;
-var includesArray = Array.prototype.includes || includesFn;
-
-function includes(obj, search) {
-    return obj && (isString(obj) ? includesStr : includesArray).call(obj, search);
-}
-
-var isArray = Array.isArray;
-
-function isFunction(obj) {
-    return typeof obj === 'function';
-}
-
-function isObject(obj) {
-    return obj !== null && typeof obj === 'object';
-}
-
-function isPlainObject(obj) {
-    return isObject(obj) && Object.getPrototypeOf(obj) === Object.prototype;
-}
-
-function isWindow(obj) {
-    return isObject(obj) && obj === obj.window;
-}
-
-function isDocument(obj) {
-    return isObject(obj) && obj.nodeType === 9;
-}
-
-function isBoolean(value) {
-    return typeof value === 'boolean';
-}
-
-function isString(value) {
-    return typeof value === 'string';
-}
-
-function isNumber(value) {
-    return typeof value === 'number';
-}
-
-function isNumeric(value) {
-    return isNumber(value) || isString(value) && !isNaN(value - parseFloat(value));
-}
-
-function isUndefined(value) {
-    return value === void 0;
-}
-
-function toBoolean(value) {
-    return isBoolean(value)
-        ? value
-        : value === 'true' || value === '1' || value === ''
-            ? true
-            : value === 'false' || value === '0'
-                ? false
-                : value;
-}
-
-function toNumber(value) {
-    var number = Number(value);
-    return !isNaN(number) ? number : false;
-}
-
-function toFloat(value) {
-    return parseFloat(value) || 0;
-}
-
-function toList(value) {
-    return isArray(value)
-        ? value
-        : isString(value)
-            ? value.split(/,(?![^(]*\))/).map(function (value) { return isNumeric(value)
-                ? toNumber(value)
-                : toBoolean(value.trim()); })
-            : [value];
-}
-
-var vars = {};
-
-function toMedia(value) {
-
-    if (isString(value)) {
-        if (value[0] === '@') {
-            var name = "media-" + (value.substr(1));
-            value = vars[name] || (vars[name] = toFloat(getCssVar(name)));
-        } else if (isNaN(value)) {
-            return value;
-        }
-    }
-
-    return value && !isNaN(value) ? ("(min-width: " + value + "px)") : false;
-}
-
-function coerce(type, value, context) {
-
-    if (type === Boolean) {
-        return toBoolean(value);
-    } else if (type === Number) {
-        return toNumber(value);
-    } else if (type === 'query') {
-        return query(value, context);
-    } else if (type === 'list') {
-        return toList(value);
-    } else if (type === 'media') {
-        return toMedia(value);
-    }
-
-    return type ? type(value) : value;
-}
-
-function toMs(time) {
-    return !time
-        ? 0
-        : endsWith(time, 'ms')
-            ? toFloat(time)
-            : toFloat(time) * 1000;
-}
-
-function swap(value, a, b) {
-    return value.replace(new RegExp((a + "|" + b), 'mg'), function (match) {
-        return match === a ? b : a;
-    });
-}
-
-var assign = Object.assign || function (target) {
-    var args = [], len = arguments.length - 1;
-    while ( len-- > 0 ) args[ len ] = arguments[ len + 1 ];
-
-    target = Object(target);
-    for (var i = 0; i < args.length; i++) {
-        var source = args[i];
-        if (source !== null) {
-            for (var key in source) {
-                if (hasOwn(source, key)) {
-                    target[key] = source[key];
-                }
-            }
-        }
-    }
-    return target;
-};
-
-function each(obj, cb) {
-    for (var key in obj) {
-        if (cb.call(obj[key], obj[key], key) === false) {
-            break;
-        }
-    }
-}
-
-function clamp(number, min, max) {
-    if ( min === void 0 ) min = 0;
-    if ( max === void 0 ) max = 1;
-
-    return Math.min(Math.max(number, min), max);
-}
-
-function noop() {}
-
-function intersectRect(r1, r2) {
-    return r1.left <= r2.right &&
-        r2.left <= r1.right &&
-        r1.top <= r2.bottom &&
-        r2.top <= r1.bottom;
-}
-
-function pointInRect(point, rect) {
-    return intersectRect({top: point.y, bottom: point.y, left: point.x, right: point.x}, rect);
 }
 
 function ajax(url, options) {
-    return new Promise$$1(function (resolve, reject) {
+    return new Promise(function (resolve, reject) {
 
         var env = assign({
             data: null,
@@ -1780,9 +903,9 @@ function ajax(url, options) {
             responseType: ''
         }, options);
 
-        var xhr = env.xhr;
-
         env.beforeSend(env);
+
+        var xhr = env.xhr;
 
         for (var prop in env) {
             if (prop in xhr) {
@@ -1818,6 +941,893 @@ function ajax(url, options) {
 
         xhr.send(env.data);
     });
+}
+
+function isReady() {
+    return doc.readyState === 'complete' || doc.readyState !== 'loading' && !docEl.doScroll;
+}
+
+function ready(fn) {
+
+    if (isReady()) {
+        fn();
+        return;
+    }
+
+    var handle = function () {
+        unbind1();
+        unbind2();
+        fn();
+    };
+    var unbind1 = on(doc, 'DOMContentLoaded', handle);
+    var unbind2 = on(win, 'load', handle);
+}
+
+function index(element, ref) {
+    return ref
+        ? toNodes(element).indexOf(toNode(ref))
+        : toNodes((element = toNode(element)) && element.parentNode.children).indexOf(element);
+}
+
+function getIndex(i, elements, current, finite) {
+    if ( current === void 0 ) current = 0;
+    if ( finite === void 0 ) finite = false;
+
+
+    elements = toNodes(elements);
+
+    var length = elements.length;
+
+    i = isNumeric(i)
+        ? toNumber(i)
+        : i === 'next'
+            ? current + 1
+            : i === 'previous'
+                ? current - 1
+                : index(elements, i);
+
+    if (finite) {
+        return clamp(i, 0, length - 1);
+    }
+
+    i %= length;
+
+    return i < 0 ? i + length : i;
+}
+
+function empty(element) {
+    element = toNode(element);
+    element.innerHTML = '';
+    return element;
+}
+
+function html(parent, html) {
+    parent = toNode(parent);
+    return isUndefined(html)
+        ? parent.innerHTML
+        : append(parent.hasChildNodes() ? empty(parent) : parent, html);
+}
+
+function prepend(parent, element) {
+
+    parent = toNode(parent);
+
+    if (!parent.hasChildNodes()) {
+        return append(parent, element);
+    } else {
+        return insertNodes(element, function (element) { return parent.insertBefore(element, parent.firstChild); });
+    }
+}
+
+function append(parent, element) {
+    parent = toNode(parent);
+    return insertNodes(element, function (element) { return parent.appendChild(element); });
+}
+
+function before(ref, element) {
+    ref = toNode(ref);
+    return insertNodes(element, function (element) { return ref.parentNode.insertBefore(element, ref); });
+}
+
+function after(ref, element) {
+    ref = toNode(ref);
+    return insertNodes(element, function (element) { return ref.nextSibling
+        ? before(ref.nextSibling, element)
+        : append(ref.parentNode, element); }
+    );
+}
+
+function insertNodes(element, fn) {
+    element = isString(element) ? fragment(element) : element;
+    return element
+        ? 'length' in element
+            ? toNodes(element).map(fn)
+            : fn(element)
+        : null;
+}
+
+function remove(element) {
+    toNodes(element).map(function (element) { return element.parentNode && element.parentNode.removeChild(element); });
+}
+
+function wrapAll(element, structure) {
+
+    structure = toNode(before(element, structure));
+
+    while (structure.firstChild) {
+        structure = structure.firstChild;
+    }
+
+    append(structure, element);
+
+    return structure;
+}
+
+function wrapInner(element, structure) {
+    return toNodes(toNodes(element).map(function (element) { return element.hasChildNodes ? wrapAll(toNodes(element.childNodes), structure) : append(element, structure); }
+    ));
+}
+
+function unwrap(element) {
+    toNodes(element)
+        .map(function (element) { return element.parentNode; })
+        .filter(function (value, index, self) { return self.indexOf(value) === index; })
+        .forEach(function (parent) {
+            before(parent, parent.childNodes);
+            remove(parent);
+        });
+}
+
+var fragmentRE = /^\s*<(\w+|!)[^>]*>/;
+var singleTagRE = /^<(\w+)\s*\/?>(?:<\/\1>)?$/;
+
+function fragment(html) {
+
+    var matches = singleTagRE.exec(html);
+    if (matches) {
+        return doc.createElement(matches[1]);
+    }
+
+    var container = doc.createElement('div');
+    if (fragmentRE.test(html)) {
+        container.insertAdjacentHTML('beforeend', html.trim());
+    } else {
+        container.textContent = html;
+    }
+
+    return container.childNodes.length > 1 ? toNodes(container.childNodes) : container.firstChild;
+
+}
+
+function addClass(element) {
+    var args = [], len = arguments.length - 1;
+    while ( len-- > 0 ) args[ len ] = arguments[ len + 1 ];
+
+    apply(element, args, 'add');
+}
+
+function removeClass(element) {
+    var args = [], len = arguments.length - 1;
+    while ( len-- > 0 ) args[ len ] = arguments[ len + 1 ];
+
+    apply(element, args, 'remove');
+}
+
+function removeClasses(element, cls) {
+    filterAttr(element, 'class', new RegExp(("(^|\\s)" + cls + "(?!\\S)"), 'g'), '');
+}
+
+function replaceClass(element) {
+    var args = [], len = arguments.length - 1;
+    while ( len-- > 0 ) args[ len ] = arguments[ len + 1 ];
+
+    args[0] && removeClass(element, args[0]);
+    args[1] && addClass(element, args[1]);
+}
+
+function hasClass(element, cls) {
+    return supports.ClassList && toNodes(element).some(function (element) { return element.classList.contains(cls); });
+}
+
+function toggleClass(element) {
+    var args = [], len = arguments.length - 1;
+    while ( len-- > 0 ) args[ len ] = arguments[ len + 1 ];
+
+
+    if (!supports.ClassList || !args.length) {
+        return;
+    }
+
+    args = getArgs$1(args);
+
+    var force = !isString(args[args.length - 1]) ? args.pop() : []; // in iOS 9.3 force === undefined evaluates to false
+
+    args = args.filter(Boolean);
+
+    toNodes(element).forEach(function (ref) {
+        var classList = ref.classList;
+
+        for (var i = 0; i < args.length; i++) {
+            supports.Force
+                ? classList.toggle.apply(classList, [args[i]].concat(force))
+                : (classList[(!isUndefined(force) ? force : !classList.contains(args[i])) ? 'add' : 'remove'](args[i]));
+        }
+    });
+
+}
+
+function apply(element, args, fn) {
+    args = getArgs$1(args).filter(Boolean);
+
+    supports.ClassList && args.length && toNodes(element).forEach(function (ref) {
+        var classList = ref.classList;
+
+        supports.Multiple
+            ? classList[fn].apply(classList, args)
+            : args.forEach(function (cls) { return classList[fn](cls); });
+    });
+}
+
+function getArgs$1(args) {
+    return args.reduce(function (args, arg) { return args.concat.call(args, isString(arg) && includes(arg, ' ') ? arg.trim().split(' ') : arg); }
+        , []);
+}
+
+var cssNumber = {
+    'animation-iteration-count': true,
+    'column-count': true,
+    'fill-opacity': true,
+    'flex-grow': true,
+    'flex-shrink': true,
+    'font-weight': true,
+    'line-height': true,
+    'opacity': true,
+    'order': true,
+    'orphans': true,
+    'widows': true,
+    'z-index': true,
+    'zoom': true
+};
+
+function css(element, property, value) {
+
+    return toNodes(element).map(function (element) {
+
+        if (isString(property)) {
+
+            property = propName(property);
+
+            if (isUndefined(value)) {
+                return getStyle(element, property);
+            } else if (!value && value !== 0) {
+                element.style.removeProperty(property);
+            } else {
+                element.style[property] = isNumeric(value) && !cssNumber[property] ? (value + "px") : value;
+            }
+
+        } else if (isArray(property)) {
+
+            var styles = getStyles(element);
+
+            return property.reduce(function (props, property) {
+                props[property] = styles[propName(property)];
+                return props;
+            }, {});
+
+        } else if (isObject(property)) {
+            each(property, function (value, property) { return css(element, property, value); });
+        }
+
+        return element;
+
+    })[0];
+
+}
+
+function getStyles(element, pseudoElt) {
+    element = toNode(element);
+    return element.ownerDocument.defaultView.getComputedStyle(element, pseudoElt);
+}
+
+function getStyle(element, property, pseudoElt) {
+    return getStyles(element, pseudoElt)[property];
+}
+
+var vars = {};
+
+function getCssVar(name) {
+
+    if (!(name in vars)) {
+
+        /* usage in css: .var-name:before { content:"xyz" } */
+
+        var element = append(docEl, doc.createElement('div'));
+
+        addClass(element, ("var-" + name));
+
+        try {
+
+            vars[name] = getStyle(element, 'content', ':before').replace(/^["'](.*)["']$/, '$1');
+            vars[name] = JSON.parse(vars[name]);
+
+        } catch (e) {}
+
+        docEl.removeChild(element);
+
+    }
+
+    return vars[name];
+
+}
+
+var cssProps = {};
+
+function propName(name) {
+
+    var ret = cssProps[name];
+    if (!ret) {
+        ret = cssProps[name] = vendorPropName(name) || name;
+    }
+    return ret;
+}
+
+var cssPrefixes = ['webkit', 'moz', 'ms'];
+var ref$1 = doc.createElement('_');
+var style = ref$1.style;
+
+function vendorPropName(name) {
+
+    name = hyphenate(name);
+
+    if (name in style) {
+        return name;
+    }
+
+    var i = cssPrefixes.length, prefixedName;
+
+    while (i--) {
+        prefixedName = "-" + (cssPrefixes[i]) + "-" + name;
+        if (prefixedName in style) {
+            return prefixedName;
+        }
+    }
+}
+
+function transition(element, props, duration, timing) {
+    if ( duration === void 0 ) duration = 400;
+    if ( timing === void 0 ) timing = 'linear';
+
+
+    return Promise.all(toNodes(element).map(function (element) { return new Promise(function (resolve, reject) {
+
+            for (var name in props) {
+                var value = css(element, name);
+                if (value === '') {
+                    css(element, name, value);
+                }
+            }
+
+            var timer = setTimeout(function () { return trigger(element, 'transitionend'); }, duration);
+
+            once(element, 'transitionend transitioncanceled', function (ref) {
+                var type = ref.type;
+
+                clearTimeout(timer);
+                removeClass(element, 'uk-transition');
+                css(element, {
+                    'transition-property': '',
+                    'transition-duration': '',
+                    'transition-timing-function': ''
+                });
+                type === 'transitioncanceled' ? reject() : resolve();
+            }, false, function (ref) {
+                var target = ref.target;
+
+                return element === target;
+            });
+
+            addClass(element, 'uk-transition');
+            css(element, assign({
+                'transition-property': Object.keys(props).map(propName).join(','),
+                'transition-duration': (duration + "ms"),
+                'transition-timing-function': timing
+            }, props));
+
+        }); }
+    ));
+
+}
+
+var Transition = {
+
+    start: transition,
+
+    stop: function stop(element) {
+        trigger(element, 'transitionend');
+        return Promise.resolve();
+    },
+
+    cancel: function cancel(element) {
+        trigger(element, 'transitioncanceled');
+    },
+
+    inProgress: function inProgress(element) {
+        return hasClass(element, 'uk-transition');
+    }
+
+};
+
+var animationPrefix = 'uk-animation-';
+var clsCancelAnimation = 'uk-cancel-animation';
+
+function animate(element, animation, duration, origin, out) {
+    var arguments$1 = arguments;
+    if ( duration === void 0 ) duration = 200;
+
+
+    return Promise.all(toNodes(element).map(function (element) { return new Promise(function (resolve, reject) {
+
+            if (hasClass(element, clsCancelAnimation)) {
+                requestAnimationFrame(function () { return Promise.resolve().then(function () { return animate.apply(void 0, arguments$1).then(resolve, reject); }
+                    ); }
+                );
+                return;
+            }
+
+            var cls = animation + " " + animationPrefix + (out ? 'leave' : 'enter');
+
+            if (startsWith(animation, animationPrefix)) {
+
+                if (origin) {
+                    cls += " uk-transform-origin-" + origin;
+                }
+
+                if (out) {
+                    cls += " " + animationPrefix + "reverse";
+                }
+
+            }
+
+            reset();
+
+            once(element, 'animationend animationcancel', function (ref) {
+                var type = ref.type;
+
+
+                var hasReset = false;
+
+                if (type === 'animationcancel') {
+                    reject();
+                    reset();
+                } else {
+                    resolve();
+                    Promise.resolve().then(function () {
+                        hasReset = true;
+                        reset();
+                    });
+                }
+
+                requestAnimationFrame(function () {
+                    if (!hasReset) {
+                        addClass(element, clsCancelAnimation);
+
+                        requestAnimationFrame(function () { return removeClass(element, clsCancelAnimation); });
+                    }
+                });
+
+            }, false, function (ref) {
+                var target = ref.target;
+
+                return element === target;
+            });
+
+            css(element, 'animationDuration', (duration + "ms"));
+            addClass(element, cls);
+
+            function reset() {
+                css(element, 'animationDuration', '');
+                removeClasses(element, (animationPrefix + "\\S*"));
+            }
+
+        }); }
+    ));
+
+}
+
+var inProgress = new RegExp((animationPrefix + "(enter|leave)"));
+var Animation = {
+
+    in: function in$1(element, animation, duration, origin) {
+        return animate(element, animation, duration, origin, false);
+    },
+
+    out: function out(element, animation, duration, origin) {
+        return animate(element, animation, duration, origin, true);
+    },
+
+    inProgress: function inProgress$1(element) {
+        return inProgress.test(attr(element, 'class'));
+    },
+
+    cancel: function cancel(element) {
+        trigger(element, 'animationcancel');
+    }
+
+};
+
+function $(selector, context) {
+    return !isString(selector)
+        ? toNode(selector)
+        : isHtml(selector)
+            ? toNode(fragment(selector))
+            : find(selector, context);
+}
+
+function $$(selector, context) {
+    return !isString(selector)
+        ? toNodes(selector)
+        : isHtml(selector)
+            ? toNodes(fragment(selector))
+            : findAll(selector, context);
+}
+
+function isHtml(str) {
+    return str[0] === '<' || str.match(/^\s*</);
+}
+
+var dirs = {
+    width: ['x', 'left', 'right'],
+    height: ['y', 'top', 'bottom']
+};
+
+function positionAt(element, target, elAttach, targetAttach, elOffset, targetOffset, flip, boundary) {
+
+    elAttach = getPos(elAttach);
+    targetAttach = getPos(targetAttach);
+
+    var flipped = {element: elAttach, target: targetAttach};
+
+    if (!element || !target) {
+        return flipped;
+    }
+
+    var dim = getDimensions(element);
+    var targetDim = getDimensions(target);
+    var position = targetDim;
+
+    moveTo(position, elAttach, dim, -1);
+    moveTo(position, targetAttach, targetDim, 1);
+
+    elOffset = getOffsets(elOffset, dim.width, dim.height);
+    targetOffset = getOffsets(targetOffset, targetDim.width, targetDim.height);
+
+    elOffset['x'] += targetOffset['x'];
+    elOffset['y'] += targetOffset['y'];
+
+    position.left += elOffset['x'];
+    position.top += elOffset['y'];
+
+    boundary = getDimensions(boundary || window$1(element));
+
+    if (flip) {
+        each(dirs, function (ref, prop) {
+            var dir = ref[0];
+            var align = ref[1];
+            var alignFlip = ref[2];
+
+
+            if (!(flip === true || includes(flip, dir))) {
+                return;
+            }
+
+            var elemOffset = elAttach[dir] === align
+                ? -dim[prop]
+                : elAttach[dir] === alignFlip
+                    ? dim[prop]
+                    : 0;
+
+            var targetOffset = targetAttach[dir] === align
+                ? targetDim[prop]
+                : targetAttach[dir] === alignFlip
+                    ? -targetDim[prop]
+                    : 0;
+
+            if (position[align] < boundary[align] || position[align] + dim[prop] > boundary[alignFlip]) {
+
+                var centerOffset = dim[prop] / 2;
+                var centerTargetOffset = targetAttach[dir] === 'center' ? -targetDim[prop] / 2 : 0;
+
+                elAttach[dir] === 'center' && (
+                    apply(centerOffset, centerTargetOffset)
+                    || apply(-centerOffset, -centerTargetOffset)
+                ) || apply(elemOffset, targetOffset);
+
+            }
+
+            function apply(elemOffset, targetOffset) {
+
+                var newVal = position[align] + elemOffset + targetOffset - elOffset[dir] * 2;
+
+                if (newVal >= boundary[align] && newVal + dim[prop] <= boundary[alignFlip]) {
+                    position[align] = newVal;
+
+                    ['element', 'target'].forEach(function (el) {
+                        flipped[el][dir] = !elemOffset
+                            ? flipped[el][dir]
+                            : flipped[el][dir] === dirs[prop][1]
+                                ? dirs[prop][2]
+                                : dirs[prop][1];
+                    });
+
+                    return true;
+                }
+
+            }
+
+        });
+    }
+
+    offset(element, position);
+
+    return flipped;
+}
+
+function offset(element, coordinates) {
+
+    element = toNode(element);
+
+    if (coordinates) {
+
+        var currentOffset = offset(element);
+        var pos = css(element, 'position');
+
+        ['left', 'top'].forEach(function (prop) {
+            if (prop in coordinates) {
+                var value = css(element, prop);
+                element.style[prop] = ((coordinates[prop] - currentOffset[prop])
+                + toFloat(pos === 'absolute' && value === 'auto' ? position(element)[prop] : value)) + "px";
+            }
+        });
+
+        return;
+    }
+
+    return getDimensions(element);
+}
+
+function getDimensions(element) {
+
+    element = toNode(element);
+
+    var ref = window$1(element);
+    var top = ref.pageYOffset;
+    var left = ref.pageXOffset;
+
+    if (isWindow(element)) {
+
+        var height = element.innerHeight;
+        var width = element.innerWidth;
+
+        return {
+            top: top,
+            left: left,
+            height: height,
+            width: width,
+            bottom: top + height,
+            right: left + width,
+        };
+    }
+
+    var display = false;
+    if (!isVisible(element)) {
+        display = element.style.display;
+        element.style.display = 'block';
+    }
+
+    var rect = element.getBoundingClientRect();
+
+    if (display !== false) {
+        element.style.display = display;
+    }
+
+    return {
+        height: rect.height,
+        width: rect.width,
+        top: rect.top + top,
+        left: rect.left + left,
+        bottom: rect.bottom + top,
+        right: rect.right + left,
+    };
+}
+
+function position(element) {
+    element = toNode(element);
+
+    var parent = offsetParent(element);
+    var parentOffset = parent === docEl$1(element) ? {top: 0, left: 0} : offset(parent);
+    var ref = ['top', 'left'].reduce(function (props, prop) {
+        var propName$$1 = ucfirst(prop);
+        props[prop] -= parentOffset[prop]
+            + (toFloat(css(element, ("margin" + propName$$1))) || 0)
+            + (toFloat(css(parent, ("border" + propName$$1 + "Width"))) || 0);
+        return props;
+    }, offset(element));
+    var top = ref.top;
+    var left = ref.left;
+
+    return {top: top, left: left};
+}
+
+function offsetParent(element) {
+
+    var parent = toNode(element).offsetParent;
+
+    while (parent && css(parent, 'position') === 'static') {
+        parent = parent.offsetParent;
+    }
+
+    return parent || docEl$1(element);
+}
+
+var height = dimension('height');
+var width = dimension('width');
+
+function dimension(prop) {
+    var propName$$1 = ucfirst(prop);
+    return function (element, value) {
+
+        element = toNode(element);
+
+        if (isUndefined(value)) {
+
+            if (isWindow(element)) {
+                return element[("inner" + propName$$1)];
+            }
+
+            if (isDocument(element)) {
+                var doc = element.documentElement;
+                return Math.max(doc.offsetHeight, doc.scrollHeight);
+            }
+
+            value = css(element, prop);
+            value = value === 'auto' ? element[("offset" + propName$$1)] : toFloat(value) || 0;
+
+            return getContentSize(prop, element, value);
+
+        } else {
+
+            css(element, prop, !value && value !== 0
+                ? ''
+                : getContentSize(prop, element, value) + 'px'
+            );
+
+        }
+
+    };
+}
+
+function getContentSize(prop, element, value) {
+    return css(element, 'boxSizing') === 'border-box' ? dirs[prop].slice(1).map(ucfirst).reduce(function (value, prop) { return value
+        - toFloat(css(element, ("padding" + prop)))
+        - toFloat(css(element, ("border" + prop + "Width"))); }
+        , value) : value;
+}
+
+function moveTo(position, attach, dim, factor) {
+    each(dirs, function (ref, prop) {
+        var dir = ref[0];
+        var align = ref[1];
+        var alignFlip = ref[2];
+
+        if (attach[dir] === alignFlip) {
+            position[align] += dim[prop] * factor;
+        } else if (attach[dir] === 'center') {
+            position[align] += dim[prop] * factor / 2;
+        }
+    });
+}
+
+function getPos(pos) {
+
+    var x = /left|center|right/;
+    var y = /top|center|bottom/;
+
+    pos = (pos || '').split(' ');
+
+    if (pos.length === 1) {
+        pos = x.test(pos[0])
+            ? pos.concat(['center'])
+            : y.test(pos[0])
+                ? ['center'].concat(pos)
+                : ['center', 'center'];
+    }
+
+    return {
+        x: x.test(pos[0]) ? pos[0] : 'center',
+        y: y.test(pos[1]) ? pos[1] : 'center'
+    };
+}
+
+function getOffsets(offsets, width, height) {
+
+    var ref = (offsets || '').split(' ');
+    var x = ref[0];
+    var y = ref[1];
+
+    return {
+        x: x ? toFloat(x) * (endsWith(x, '%') ? width / 100 : 1) : 0,
+        y: y ? toFloat(y) * (endsWith(y, '%') ? height / 100 : 1) : 0
+    };
+}
+
+function flipPosition(pos) {
+    switch (pos) {
+        case 'left':
+            return 'right';
+        case 'right':
+            return 'left';
+        case 'top':
+            return 'bottom';
+        case 'bottom':
+            return 'top';
+        default:
+            return pos;
+    }
+}
+
+function isInView(element, top, left) {
+    if ( top === void 0 ) top = 0;
+    if ( left === void 0 ) left = 0;
+
+
+    element = toNode(element);
+
+    var win = window$1(element);
+    return intersectRect(element.getBoundingClientRect(), {
+        top: top,
+        left: left,
+        bottom: top + height(win),
+        right: left + width(win)
+    });
+}
+
+function scrolledOver(element) {
+
+    element = toNode(element);
+
+    var win = window$1(element);
+    var doc = document$1(element);
+    var elHeight = element.offsetHeight;
+    var top = positionTop(element);
+    var vp = height(win);
+    var vh = vp + Math.min(0, top - vp);
+    var diff = Math.max(0, vp - (height(doc) - (top + elHeight)));
+
+    return clamp(((vh + win.pageYOffset - top) / ((vh + (elHeight - (diff < vp ? diff : 0))) / 100)) / 100);
+}
+
+function positionTop(element) {
+    var top = 0;
+
+    do {
+
+        top += element.offsetTop;
+
+    } while ((element = element.offsetParent));
+
+    return top;
+}
+
+function window$1(element) {
+    return isWindow(element) ? element : document$1(element).defaultView;
+}
+
+function document$1(element) {
+    return toNode(element).ownerDocument;
+}
+
+function docEl$1(element) {
+    return document$1(element).documentElement;
 }
 
 /*
@@ -1865,13 +1875,13 @@ var fastdom = {
 function scheduleFlush() {
     if (!fastdom.scheduled) {
         fastdom.scheduled = true;
-        requestAnimationFrame$1(fastdom.flush.bind(fastdom));
+        requestAnimationFrame(fastdom.flush.bind(fastdom));
     }
 }
 
 function runTasks(tasks) {
     var task;
-    while (task = tasks.shift()) {
+    while ((task = tasks.shift())) {
         task();
     }
 }
@@ -1904,7 +1914,10 @@ MouseTracker.prototype = {
 
             setTimeout(function () {
 
-                var time = Date.now(), length = this$1.positions.length;
+                var time = Date.now();
+                var ref = this$1.positions;
+                var length = ref.length;
+
                 if (length && (time - this$1.positions[length - 1].time > 100)) {
                     this$1.positions.splice(0, length);
                 }
@@ -1935,9 +1948,10 @@ MouseTracker.prototype = {
             return false;
         }
 
-        var p = offset(target),
-            position$$1 = this.positions[this.positions.length - 1],
-            prevPos = this.positions[0];
+        var p = offset(target);
+        var position$$1 = this.positions[this.positions.length - 1];
+        var ref = this.positions;
+        var prevPos = ref[0];
 
         if (p.left <= position$$1.x && position$$1.x <= p.right && p.top <= position$$1.y && position$$1.y <= p.bottom) {
             return false;
@@ -1949,7 +1963,7 @@ MouseTracker.prototype = {
         ];
 
         if (p.right <= position$$1.x) {
-
+            // empty
         } else if (p.left >= position$$1.x) {
             points[0].reverse();
             points[1].reverse();
@@ -1974,11 +1988,13 @@ var strats = {};
 
 // concat strategy
 strats.args =
-strats.created =
 strats.events =
 strats.init =
-strats.ready =
+strats.created =
+strats.beforeConnect =
 strats.connected =
+strats.ready =
+strats.beforeDisconnect =
 strats.disconnected =
 strats.destroy = function (parentVal, childVal) {
 
@@ -2029,7 +2045,7 @@ var defaultStrat = function (parentVal, childVal) {
 
 function mergeOptions(parent, child) {
 
-    var options = {}, key;
+    var options = {};
 
     if (child.mixins) {
         for (var i = 0, l = child.mixins.length; i < l; i++) {
@@ -2037,13 +2053,13 @@ function mergeOptions(parent, child) {
         }
     }
 
-    for (key in parent) {
+    for (var key in parent) {
         mergeKey(key);
     }
 
-    for (key in child) {
-        if (!hasOwn(parent, key)) {
-            mergeKey(key);
+    for (var key$1 in child) {
+        if (!hasOwn(parent, key$1)) {
+            mergeKey(key$1);
         }
     }
 
@@ -2074,7 +2090,7 @@ Player.prototype.isIFrame = function isIFrame () {
 };
 
 Player.prototype.isYoutube = function isYoutube () {
-    return this.isIFrame() && !!this.el.src.match(/\/\/.*?youtube\.[a-z]+\/(watch\?v=[^&\s]+|embed)|youtu\.be\/.*/);
+    return this.isIFrame() && !!this.el.src.match(/\/\/.*?youtube(-nocookie)?\.[a-z]+\/(watch\?v=[^&\s]+|embed)|youtu\.be\/.*/);
 };
 
 Player.prototype.isVimeo = function isVimeo () {
@@ -2089,11 +2105,14 @@ Player.prototype.enableApi = function enableApi () {
         return this.ready;
     }
 
-    var youtube = this.isYoutube(), vimeo = this.isVimeo(), poller;
+    var youtube = this.isYoutube();
+    var vimeo = this.isVimeo();
+
+    var poller;
 
     if (youtube || vimeo) {
 
-        return this.ready = new Promise$1(function (resolve) {
+        return this.ready = new Promise(function (resolve) {
 
             once(this$1.el, 'load', function () {
                 if (youtube) {
@@ -2115,7 +2134,7 @@ Player.prototype.enableApi = function enableApi () {
 
     }
 
-    return Promise$1.resolve();
+    return Promise.resolve();
 
 };
 
@@ -2176,7 +2195,7 @@ function post(el, cmd) {
 
 function listen(cb) {
 
-    return new Promise$1(function (resolve) {
+    return new Promise(function (resolve) {
 
         once(win, 'message', function (_, data$$1) { return resolve(data$$1); }, false, function (ref) {
             var data$$1 = ref.data;
@@ -2239,6 +2258,11 @@ ready(function () {
         var x = ref.x;
         var y = ref.y;
         var now = Date.now();
+        var type = getType(e.type);
+
+        if (touch.type && touch.type !== type) {
+            return;
+        }
 
         touch.el = 'tagName' in target ? target : target.parentNode;
 
@@ -2251,6 +2275,7 @@ ready(function () {
             touch = {};
         }
 
+        touch.type = type;
         touch.last = now;
 
         clicked = e.button > 0;
@@ -2259,18 +2284,27 @@ ready(function () {
 
     on(doc, pointerMove, function (e) {
 
+        if (e.defaultPrevented) {
+            return;
+        }
+
         var ref = getPos$1(e);
         var x = ref.x;
         var y = ref.y;
 
         touch.x2 = x;
         touch.y2 = y;
+
     });
 
     on(doc, pointerUp, function (ref) {
         var type = ref.type;
         var target = ref.target;
 
+
+        if (touch.type !== getType(type)) {
+            return;
+        }
 
         // swipe
         if (touch.x2 && Math.abs(touch.x1 - touch.x2) > 30 || touch.y2 && Math.abs(touch.y1 - touch.y2) > 30) {
@@ -2286,7 +2320,7 @@ ready(function () {
         // normal tap
         } else if ('last' in touch) {
 
-            tapTimeout = setTimeout(function () { return touch.el && trigger(touch.el, 'tap'); });
+            tapTimeout = setTimeout(function () { return trigger(touch.el, 'tap'); });
 
             // trigger single click after 350ms of inactivity
             if (touch.el && type !== 'mouseup' && within(target, touch.el)) {
@@ -2302,10 +2336,12 @@ ready(function () {
         } else {
             touch = {};
         }
+
     });
 
     on(doc, 'touchcancel', cancelAll);
     on(win, 'scroll', cancelAll);
+
 });
 
 var touching = false;
@@ -2320,86 +2356,50 @@ function isTouch(e) {
 function getPos$1(e) {
     var touches = e.touches;
     var changedTouches = e.changedTouches;
-    
     var ref = touches && touches[0] || changedTouches && changedTouches[0] || e;
     var x = ref.pageX;
     var y = ref.pageY;
+
     return {x: x, y: y};
+}
+
+function getType(type) {
+    return type.slice(0, 5);
 }
 
 
 
 var util = Object.freeze({
-	bind: bind,
-	hasOwn: hasOwn,
-	Promise: Promise$$1,
-	classify: classify,
-	hyphenate: hyphenate,
-	camelize: camelize,
-	ucfirst: ucfirst,
-	startsWith: startsWith,
-	endsWith: endsWith,
-	includes: includes,
-	isArray: isArray,
-	isFunction: isFunction,
-	isObject: isObject,
-	isPlainObject: isPlainObject,
-	isWindow: isWindow,
-	isDocument: isDocument,
-	isBoolean: isBoolean,
-	isString: isString,
-	isNumber: isNumber,
-	isNumeric: isNumeric,
-	isUndefined: isUndefined,
-	toBoolean: toBoolean,
-	toNumber: toNumber,
-	toFloat: toFloat,
-	toList: toList,
-	toMedia: toMedia,
-	coerce: coerce,
-	toMs: toMs,
-	swap: swap,
-	assign: assign,
-	each: each,
-	clamp: clamp,
-	noop: noop,
-	intersectRect: intersectRect,
-	pointInRect: pointInRect,
 	ajax: ajax,
-	$: $,
-	$$: $$,
-	query: query,
-	queryAll: queryAll,
-	filter: filter,
-	within: within,
-	matches: matches,
-	closest: closest,
-	parents: parents,
-	isJQuery: isJQuery,
-	toNode: toNode,
-	toNodes: toNodes,
-	escape: escape,
+	transition: transition,
+	Transition: Transition,
+	animate: animate,
+	Animation: Animation,
 	attr: attr,
 	hasAttr: hasAttr,
 	removeAttr: removeAttr,
 	filterAttr: filterAttr,
 	data: data,
-	isRtl: isRtl,
-	isReady: isReady,
-	ready: ready,
-	transition: transition,
-	Transition: Transition,
-	animate: animate,
-	Animation: Animation,
+	addClass: addClass,
+	removeClass: removeClass,
+	removeClasses: removeClasses,
+	replaceClass: replaceClass,
+	hasClass: hasClass,
+	toggleClass: toggleClass,
+	$: $,
+	$$: $$,
+	positionAt: positionAt,
+	offset: offset,
+	position: position,
+	height: height,
+	width: width,
+	flipPosition: flipPosition,
 	isInView: isInView,
 	scrolledOver: scrolledOver,
+	isReady: isReady,
+	ready: ready,
+	index: index,
 	getIndex: getIndex,
-	isVoidElement: isVoidElement,
-	Dimensions: Dimensions,
-	preventClick: preventClick,
-	isVisible: isVisible,
-	selInput: selInput,
-	isInput: isInput,
 	empty: empty,
 	html: html,
 	prepend: prepend,
@@ -2411,22 +2411,11 @@ var util = Object.freeze({
 	wrapInner: wrapInner,
 	unwrap: unwrap,
 	fragment: fragment,
-	index: index,
-	css: css,
-	getStyles: getStyles,
-	getStyle: getStyle,
-	getCssVar: getCssVar,
-	addClass: addClass,
-	removeClass: removeClass,
-	removeClasses: removeClasses,
-	replaceClass: replaceClass,
-	hasClass: hasClass,
-	toggleClass: toggleClass,
 	win: win,
 	doc: doc,
 	docEl: docEl,
+	isRtl: isRtl,
 	Observer: Observer,
-	requestAnimationFrame: requestAnimationFrame$1,
 	hasTouch: hasTouch,
 	pointerDown: pointerDown,
 	pointerMove: pointerMove,
@@ -2441,16 +2430,70 @@ var util = Object.freeze({
 	trigger: trigger,
 	createEvent: createEvent,
 	toEventTargets: toEventTargets,
+	preventClick: preventClick,
 	fastdom: fastdom,
+	isVoidElement: isVoidElement,
+	isVisible: isVisible,
+	selInput: selInput,
+	isInput: isInput,
+	filter: filter,
+	within: within,
+	bind: bind,
+	hasOwn: hasOwn,
+	hyphenate: hyphenate,
+	camelize: camelize,
+	ucfirst: ucfirst,
+	startsWith: startsWith,
+	endsWith: endsWith,
+	includes: includes,
+	isArray: isArray,
+	isFunction: isFunction,
+	isObject: isObject,
+	isPlainObject: isPlainObject,
+	isWindow: isWindow,
+	isDocument: isDocument,
+	isJQuery: isJQuery,
+	isNode: isNode,
+	isNodeCollection: isNodeCollection,
+	isBoolean: isBoolean,
+	isString: isString,
+	isNumber: isNumber,
+	isNumeric: isNumeric,
+	isUndefined: isUndefined,
+	toBoolean: toBoolean,
+	toNumber: toNumber,
+	toFloat: toFloat,
+	toNode: toNode,
+	toNodes: toNodes,
+	toList: toList,
+	toMs: toMs,
+	swap: swap,
+	assign: assign,
+	each: each,
+	sortBy: sortBy,
+	clamp: clamp,
+	noop: noop,
+	intersectRect: intersectRect,
+	pointInRect: pointInRect,
+	Dimensions: Dimensions,
 	MouseTracker: MouseTracker,
 	mergeOptions: mergeOptions,
 	Player: Player,
-	positionAt: positionAt,
-	offset: offset,
-	position: position,
-	height: height,
-	width: width,
-	flipPosition: flipPosition,
+	Promise: Promise,
+	Deferred: Deferred,
+	query: query,
+	queryAll: queryAll,
+	find: find,
+	findAll: findAll,
+	matches: matches,
+	closest: closest,
+	parents: parents,
+	escape: escape,
+	css: css,
+	getStyles: getStyles,
+	getStyle: getStyle,
+	getCssVar: getCssVar,
+	propName: propName,
 	isTouch: isTouch,
 	getPos: getPos$1
 });
@@ -2483,8 +2526,10 @@ var globalAPI = function (UIkit) {
 
         options = options || {};
 
-        var Super = this, name = options.name || Super.options.name;
-        var Sub = createClass(name || 'UIkitComponent');
+        var Super = this;
+        var Sub = function UIkitComponent (options) {
+            this._init(options);
+        };
 
         Sub.prototype = Object.create(Super.prototype);
         Sub.prototype.constructor = Sub;
@@ -2540,10 +2585,6 @@ var globalAPI = function (UIkit) {
         }
 
     });
-
-    function createClass(name) {
-        return new Function(("return function " + (classify(name)) + " (options) { this._init(options); }"))();
-    }
 
     function apply(node, fn) {
 
@@ -2603,12 +2644,14 @@ var hooksAPI = function (UIkit) {
         UIkit.instances[this._uid] = this;
 
         this._data = {};
-        this._initEvents();
 
-        this._callHook('connected');
+        this._callHook('beforeConnect');
         this._connected = true;
 
+        this._initEvents();
         this._initObserver();
+
+        this._callHook('connected');
 
         if (!this._isReady) {
             ready(function () { return this$1._callReady(); });
@@ -2622,6 +2665,8 @@ var hooksAPI = function (UIkit) {
         if (!this._connected) {
             return;
         }
+
+        this._callHook('beforeDisconnect');
 
         if (this._observer) {
             this._observer.disconnect();
@@ -2662,9 +2707,8 @@ var hooksAPI = function (UIkit) {
         e = createEvent(e || 'update');
 
         var type = e.type;
-        var detail = e.detail;
 
-        if (type === 'update' && detail && detail.mutation) {
+        if (includes(['update', 'load', 'resize'], type)) {
             this._resetComputeds();
         }
 
@@ -2781,7 +2825,8 @@ var stateAPI = function (UIkit) {
         var this$1 = this;
 
 
-        var methods = this.$options.methods;
+        var ref = this.$options;
+        var methods = ref.methods;
 
         if (methods) {
             for (var key in methods) {
@@ -2794,7 +2839,8 @@ var stateAPI = function (UIkit) {
         var this$1 = this;
 
 
-        var computed = this.$options.computed;
+        var ref = this.$options;
+        var computed = ref.computed;
 
         this._resetComputeds();
 
@@ -2813,12 +2859,21 @@ var stateAPI = function (UIkit) {
         var this$1 = this;
 
 
+        var key;
+
         this._resetComputeds();
-        assign(this.$props, props || getProps(this.$options, this.$name));
+
+        props = props || getProps(this.$options, this.$name);
+
+        for (key in props) {
+            if (!isUndefined(props[key])) {
+                this$1.$props[key] = props[key];
+            }
+        }
 
         var exclude = [this.$options.computed, this.$options.methods];
-        for (var key in this$1.$props) {
-            if (notIn(exclude, key)) {
+        for (key in this$1.$props) {
+            if (key in props && notIn(exclude, key)) {
                 this$1[key] = this$1.$props[key];
             }
         }
@@ -2828,7 +2883,8 @@ var stateAPI = function (UIkit) {
         var this$1 = this;
 
 
-        var events = this.$options.events;
+        var ref = this.$options;
+        var events = ref.events;
 
         if (events) {
 
@@ -2883,14 +2939,13 @@ var stateAPI = function (UIkit) {
         var args = opts.args; if ( args === void 0 ) args = [];
         var props = opts.props; if ( props === void 0 ) props = {};
         var el = opts.el;
-        var key, prop;
 
         if (!props) {
             return data$$1;
         }
 
-        for (key in props) {
-            prop = hyphenate(key);
+        for (var key in props) {
+            var prop = hyphenate(key);
             if (hasAttr(el, prop)) {
 
                 var value = coerce(props[key], attr(el, prop), el);
@@ -2905,10 +2960,10 @@ var stateAPI = function (UIkit) {
 
         var options = parseOptions(data(el, name), args);
 
-        for (key in options) {
-            prop = camelize(key);
-            if (props[prop] !== undefined) {
-                data$$1[prop] = coerce(props[prop], options[key], el);
+        for (var key$1 in options) {
+            var prop$1 = camelize(key$1);
+            if (props[prop$1] !== undefined) {
+                data$$1[prop$1] = coerce(props[prop$1], options[key$1], el);
             }
         }
 
@@ -2977,10 +3032,11 @@ var stateAPI = function (UIkit) {
 
         var name = event.name;
         var el = event.el;
-        var delegate = event.delegate;
-        var self = event.self;
-        var filter = event.filter;
         var handler = event.handler;
+        var capture = event.capture;
+        var delegate = event.delegate;
+        var filter = event.filter;
+        var self = event.self;
         el = isFunction(el)
             ? el.call(component)
             : el || component.$el;
@@ -3009,7 +3065,8 @@ var stateAPI = function (UIkit) {
                     : isString(delegate)
                         ? delegate
                         : delegate.call(component),
-                handler
+                handler,
+                capture
             )
         );
 
@@ -3028,7 +3085,38 @@ var stateAPI = function (UIkit) {
     }
 
     function detail(listener) {
-        return function (e) { return isArray(e.detail) ? listener.apply(listener, [e].concat(e.detail)) : listener(e); };
+        return function (e) { return isArray(e.detail) ? listener.apply(void 0, [e].concat(e.detail)) : listener(e); };
+    }
+
+    function coerce(type, value, context) {
+
+        if (type === Boolean) {
+            return toBoolean(value);
+        } else if (type === Number) {
+            return toNumber(value);
+        } else if (type === 'query') {
+            return query(value, context);
+        } else if (type === 'list') {
+            return toList(value);
+        } else if (type === 'media') {
+            return toMedia(value);
+        }
+
+        return type ? type(value) : value;
+    }
+
+    function toMedia(value) {
+
+        if (isString(value)) {
+            if (value[0] === '@') {
+                var name = "media-" + (value.substr(1));
+                value = toFloat(getCssVar(name));
+            } else if (isNaN(value)) {
+                return value;
+            }
+        }
+
+        return value && !isNaN(value) ? ("(min-width: " + value + "px)") : false;
     }
 
 };
@@ -3039,7 +3127,8 @@ var instanceAPI = function (UIkit) {
 
     UIkit.prototype.$mount = function (el) {
 
-        var name = this.$options.name;
+        var ref = this.$options;
+        var name = ref.name;
 
         if (!el[DATA]) {
             el[DATA] = {};
@@ -3068,19 +3157,6 @@ var instanceAPI = function (UIkit) {
 
     UIkit.prototype.$update = function (e, parents) {
         UIkit.update(e, this.$options.el, parents);
-    };
-
-    UIkit.prototype.$reinit = function (data) {
-
-        this.$options.data = data;
-        this._initData();
-
-        if (this._connected) {
-            this.$reset();
-        } else {
-            this._initProps();
-        }
-
     };
 
     UIkit.prototype.$reset = function (data) {
@@ -3160,8 +3236,8 @@ var componentAPI = function (UIkit) {
 
                 var cmp = UIkit.getComponent(element, name);
 
-                if (cmp) {
-                    cmp.$reinit(data);
+                if (cmp && data) {
+                    cmp.$reset(data);
                 }
 
                 return cmp || new UIkit.components[name]({el: element, data: data || {}});
@@ -3181,20 +3257,18 @@ var componentAPI = function (UIkit) {
 
     UIkit.connect = function (node) {
 
-        var name;
-
         if (node[DATA]) {
-            for (name in node[DATA]) {
+            for (var name in node[DATA]) {
                 node[DATA][name]._callConnected();
             }
         }
 
         for (var i = 0; i < node.attributes.length; i++) {
 
-            name = getComponentName(node.attributes[i].name);
+            var name$1 = getComponentName(node.attributes[i].name);
 
-            if (name && name in UIkit.components) {
-                UIkit[name](node);
+            if (name$1 && name$1 in UIkit.components) {
+                UIkit[name$1](node);
             }
 
         }
@@ -3322,14 +3396,15 @@ var Togglable = {
         toggleElement: function toggleElement(targets, show, animate) {
             var this$1 = this;
 
-            return new Promise$$1(function (resolve) {
+            return new Promise(function (resolve) {
 
                 targets = toNodes(targets);
 
-                var all = function (targets) { return Promise$$1.all(targets.map(function (el) { return this$1._toggleElement(el, show, animate); })); },
-                    toggled = targets.filter(function (el) { return this$1.isToggled(el); }),
-                    untoggled = targets.filter(function (el) { return !includes(toggled, el); }),
-                    p;
+                var all = function (targets) { return Promise.all(targets.map(function (el) { return this$1._toggleElement(el, show, animate); })); };
+                var toggled = targets.filter(function (el) { return this$1.isToggled(el); });
+                var untoggled = targets.filter(function (el) { return !includes(toggled, el); });
+
+                var p;
 
                 if (!this$1.queued || !isUndefined(animate) || !isUndefined(show) || !this$1.hasAnimation || targets.length < 2) {
 
@@ -3337,10 +3412,10 @@ var Togglable = {
 
                 } else {
 
-                    var body = doc.body,
-                        scroll = body.scrollTop,
-                        el = toggled[0],
-                        inProgress = Animation.inProgress(el) && hasClass(el, 'uk-animation-leave')
+                    var body = doc.body;
+                    var scroll = body.scrollTop;
+                    var el = toggled[0];
+                    var inProgress = Animation.inProgress(el) && hasClass(el, 'uk-animation-leave')
                             || Transition.inProgress(el) && el.style.height === '0px';
 
                     p = all(toggled);
@@ -3363,7 +3438,7 @@ var Togglable = {
         toggleNow: function toggleNow(targets, show) {
             var this$1 = this;
 
-            return new Promise$$1(function (resolve) { return Promise$$1.all(toNodes(targets).map(function (el) { return this$1._toggleElement(el, show, false); })).then(resolve, noop); });
+            return new Promise(function (resolve) { return Promise.all(toNodes(targets).map(function (el) { return this$1._toggleElement(el, show, false); })).then(resolve, noop); });
         },
 
         isToggled: function isToggled(el) {
@@ -3392,7 +3467,7 @@ var Togglable = {
                         : !this.isToggled(el);
 
             if (!trigger(el, ("before" + (show ? 'show' : 'hide')), [this])) {
-                return Promise$$1.reject();
+                return Promise.reject();
             }
 
             var promise = (animate === false || !this.hasAnimation
@@ -3430,17 +3505,16 @@ var Togglable = {
 
         _toggleImmediate: function _toggleImmediate(el, show) {
             this._toggle(el, show);
-            return Promise$$1.resolve();
+            return Promise.resolve();
         },
 
         _toggleHeight: function _toggleHeight(el, show) {
             var this$1 = this;
 
 
-            var inProgress = Transition.inProgress(el),
-                inner = el.hasChildNodes ? toFloat(css(el.firstElementChild, 'marginTop')) + toFloat(css(el.lastElementChild, 'marginBottom')) : 0,
-                currentHeight = isVisible(el) ? height(el) + (inProgress ? 0 : inner) : 0,
-                endHeight;
+            var inProgress = Transition.inProgress(el);
+            var inner = el.hasChildNodes ? toFloat(css(el.firstElementChild, 'marginTop')) + toFloat(css(el.lastElementChild, 'marginBottom')) : 0;
+            var currentHeight = isVisible(el) ? height(el) + (inProgress ? 0 : inner) : 0;
 
             Transition.cancel(el);
 
@@ -3453,7 +3527,7 @@ var Togglable = {
             // Update child components first
             fastdom.flush();
 
-            endHeight = height(el) + (inProgress ? 0 : inner);
+            var endHeight = height(el) + (inProgress ? 0 : inner);
             height(el, currentHeight);
 
             return (show
@@ -3557,6 +3631,50 @@ var Modal = {
         },
 
         {
+            name: 'beforeshow',
+
+            self: true,
+
+            handler: function handler(e) {
+
+                var prev = active && active !== this && active;
+
+                active = this;
+
+                if (prev) {
+                    if (this.stack) {
+                        this.prev = prev;
+                    } else {
+                        prev.hide().then(this.show);
+                        e.preventDefault();
+                        return;
+                    }
+                }
+
+                registerEvents();
+
+            }
+
+        },
+
+        {
+            name: 'beforehide',
+
+            self: true,
+
+            handler: function handler() {
+
+                active = active && active !== this && active || this.prev;
+
+                if (!active) {
+                    deregisterEvents();
+                }
+
+            }
+
+        },
+
+        {
 
             name: 'show',
 
@@ -3585,7 +3703,9 @@ var Modal = {
                 var this$1 = this;
 
 
-                var found, prev = this.prev;
+                var found;
+                var ref = this;
+                var prev = ref.prev;
 
                 while (prev) {
 
@@ -3627,37 +3747,13 @@ var Modal = {
                 this._callConnected();
             }
 
-            var prev = active && active !== this && active;
-
-            active = this;
-
-            if (prev) {
-                if (this.stack) {
-                    this.prev = prev;
-                } else {
-                    prev.hide().then(this.show);
-                    return;
-                }
-            }
-
-            registerEvents();
-
             return this.toggleNow(this.$el, true);
         },
 
         hide: function hide() {
-
-            if (!this.isToggled()) {
-                return;
+            if (this.isToggled()) {
+                return this.toggleNow(this.$el, false);
             }
-
-            active = active && active !== this && active || this.prev;
-
-            if (!active) {
-                deregisterEvents();
-            }
-
-            return this.toggleNow(this.$el, false);
         },
 
         getActive: function getActive() {
@@ -3667,7 +3763,7 @@ var Modal = {
         _toggleImmediate: function _toggleImmediate(el, show) {
             var this$1 = this;
 
-            return new Promise$$1(function (resolve) { return requestAnimationFrame$1(function () {
+            return new Promise(function (resolve) { return requestAnimationFrame(function () {
                     this$1._toggle(el, show);
 
                     if (this$1.transitionDuration) {
@@ -3696,7 +3792,7 @@ function registerEvents() {
             var target = ref.target;
             var defaultPrevented = ref.defaultPrevented;
 
-            if (active && active.bgClose && !defaultPrevented && !within(target, active.panel)) {
+            if (active && active.bgClose && !defaultPrevented && !within(target, (active.panel || active.$el))) {
                 active.hide();
             }
         }),
@@ -3755,20 +3851,29 @@ var Position = {
             removeClasses(element, ((this.clsPos) + "-(top|bottom|left|right)(-[a-z]+)?"));
             css(element, {top: '', left: ''});
 
-            var offset = toNumber(this.offset) || 0,
-                axis = this.getAxis();
-            var ref = positionAt(
-                    element,
-                    target,
-                    axis === 'x' ? ((flipPosition(this.dir)) + " " + (this.align)) : ((this.align) + " " + (flipPosition(this.dir))),
-                    axis === 'x' ? ((this.dir) + " " + (this.align)) : ((this.align) + " " + (this.dir)),
-                    axis === 'x' ? ("" + (this.dir === 'left' ? -1 * offset : offset)) : (" " + (this.dir === 'top' ? -1 * offset : offset)),
-                    null,
-                    this.flip,
-                    boundary
-                ).target;
-            var x = ref.x;
-            var y = ref.y;
+            var node;
+            var ref = this;
+            var offset$$1 = ref.offset;
+
+            offset$$1 = isNumeric(offset$$1)
+                ? offset$$1
+                : (node = $(offset$$1))
+                    ? offset(node)[axis === 'x' ? 'left' : 'top'] - offset(target)[axis === 'x' ? 'right' : 'bottom']
+                    : 0;
+
+            var axis = this.getAxis();
+            var ref$1 = positionAt(
+                element,
+                target,
+                axis === 'x' ? ((flipPosition(this.dir)) + " " + (this.align)) : ((this.align) + " " + (flipPosition(this.dir))),
+                axis === 'x' ? ((this.dir) + " " + (this.align)) : ((this.align) + " " + (this.dir)),
+                axis === 'x' ? ("" + (this.dir === 'left' ? -offset$$1 : offset$$1)) : (" " + (this.dir === 'top' ? -offset$$1 : offset$$1)),
+                null,
+                this.flip,
+                boundary
+            ).target;
+            var x = ref$1.x;
+            var y = ref$1.y;
 
             this.dir = axis === 'x' ? x : y;
             this.align = axis === 'x' ? y : x;
@@ -3852,9 +3957,14 @@ var Accordion = function (UIkit) {
 
         ],
 
-        ready: function ready() {
-            var active = this.active !== false && !hasClass(active, this.clsOpen) && this.items[Number(this.active)];
-            if (active) {
+        connected: function connected() {
+
+            if (this.active === false) {
+                return;
+            }
+
+            var active = this.items[Number(this.active)];
+            if (active && !hasClass(active, this.clsOpen)) {
                 this.toggle(active, false);
             }
         },
@@ -3877,8 +3987,8 @@ var Accordion = function (UIkit) {
                 var this$1 = this;
 
 
-                var index = getIndex(item, this.items),
-                    active = filter(this.items, ("." + (this.clsOpen)));
+                var index = getIndex(item, this.items);
+                var active = filter(this.items, ("." + (this.clsOpen)));
 
                 item = this.items[index];
 
@@ -3886,7 +3996,8 @@ var Accordion = function (UIkit) {
                     .concat(!this.multiple && !includes(active, item) && active || [])
                     .forEach(function (el) {
 
-                        var isItem = el === item, state = isItem && !hasClass(el, this$1.clsOpen);
+                        var isItem = el === item;
+                        var state = isItem && !hasClass(el, this$1.clsOpen);
 
                         if (!state && isItem && !this$1.collapsible && active.length < 2) {
                             return;
@@ -3972,6 +4083,66 @@ var Alert = function (UIkit) {
             }
 
         }
+
+    });
+
+};
+
+var Core = function (UIkit) {
+
+    ready(function () {
+
+        var scroll = 0;
+        var started = 0;
+
+        on(win, 'load resize', UIkit.update);
+        on(win, 'scroll', function (e) {
+            e.dir = scroll <= win.pageYOffset ? 'down' : 'up';
+            e.scrollY = scroll = win.pageYOffset;
+            UIkit.update(e);
+        });
+
+        on(doc, 'animationstart', function (ref) {
+            var target = ref.target;
+
+            if ((css(target, 'animationName') || '').match(/^uk-.*(left|right)/)) {
+                started++;
+                doc.body.style.overflowX = 'hidden';
+                setTimeout(function () {
+                    if (!--started) {
+                        doc.body.style.overflowX = '';
+                    }
+                }, toMs(css(target, 'animationDuration')) + 100);
+            }
+        }, true);
+
+        if (!hasTouch) {
+            return;
+        }
+
+        var cls = 'uk-hover';
+
+        on(doc, 'tap', function (ref) {
+                var target = ref.target;
+
+                return $$(("." + cls)).forEach(function (el) { return !within(target, el) && removeClass(el, cls); }
+            );
+        }
+        );
+
+        Object.defineProperty(UIkit, 'hoverSelector', {
+
+            set: function set(selector) {
+                on(doc, 'tap', selector, function (ref) {
+                    var current = ref.current;
+
+                    return addClass(current, cls);
+                });
+            }
+
+        });
+
+        UIkit.hoverSelector = '.uk-animation-toggle, .uk-transition-toggle, [uk-hover]';
 
     });
 
@@ -4073,13 +4244,6 @@ var Drop = function (UIkit) {
 
         computed: {
 
-            toggle: function toggle(ref, $el) {
-                var mode = ref.mode;
-                var toggle = ref.toggle;
-
-                return toggle && UIkit.toggle(isString(toggle) ? query(toggle, $el) : $el.previousElementSibling, {target: $el, mode: mode});
-            },
-
             clsDrop: function clsDrop(ref) {
                 var clsDrop = ref.clsDrop;
 
@@ -4098,10 +4262,16 @@ var Drop = function (UIkit) {
         },
 
         connected: function connected() {
-            var this$1 = this;
+
+            var ref = this.$props;
+            var toggle = ref.toggle;
+            this.toggle = toggle && UIkit.toggle(isString(toggle) ? query(toggle, this.$el) : this.$el.previousElementSibling, {
+                target: this.$el,
+                mode: this.mode
+            });
 
             this.updateAria(this.$el);
-            Promise$$1.resolve().then(function () { return this$1.toggle; }); // access computed toggle
+
         },
 
         events: [
@@ -4250,6 +4420,7 @@ var Drop = function (UIkit) {
 
                 handler: function handler() {
                     this.clearTimers();
+                    this.position();
                 }
 
             },
@@ -4327,49 +4498,44 @@ var Drop = function (UIkit) {
                 if ( delay === void 0 ) delay = true;
 
 
-                var show = function () {
-                        if (!this$1.isToggled()) {
-                            this$1.position();
-                            this$1.toggleElement(this$1.$el, true);
-                        }
-                    },
-                    tryShow = function () {
+                var show = function () { return !this$1.isToggled() && this$1.toggleElement(this$1.$el, true); };
+                var tryShow = function () {
 
-                        this$1.toggle = toggle || this$1.toggle;
+                    this$1.toggle = toggle || this$1.toggle;
 
-                        this$1.clearTimers();
+                    this$1.clearTimers();
 
-                        if (this$1.isActive()) {
-                            return;
-                        } else if (delay && active && active !== this$1 && active.isDelaying) {
-                            this$1.showTimer = setTimeout(this$1.show, 10);
-                            return;
-                        } else if (this$1.isParentOf(active)) {
+                    if (this$1.isActive()) {
+                        return;
+                    } else if (delay && active && active !== this$1 && active.isDelaying) {
+                        this$1.showTimer = setTimeout(this$1.show, 10);
+                        return;
+                    } else if (this$1.isParentOf(active)) {
 
-                            if (active.hideTimer) {
-                                active.hide(false);
-                            } else {
-                                return;
-                            }
-
-                        } else if (active && !this$1.isChildOf(active) && !this$1.isParentOf(active)) {
-
-                            var prev;
-                            while (active && active !== prev && !this$1.isChildOf(active)) {
-                                prev = active;
-                                active.hide(false);
-                            }
-
-                        }
-
-                        if (delay && this$1.delayShow) {
-                            this$1.showTimer = setTimeout(show, this$1.delayShow);
+                        if (active.hideTimer) {
+                            active.hide(false);
                         } else {
-                            show();
+                            return;
                         }
 
-                        active = this$1;
-                    };
+                    } else if (active && !this$1.isChildOf(active) && !this$1.isParentOf(active)) {
+
+                        var prev;
+                        while (active && active !== prev && !this$1.isChildOf(active)) {
+                            prev = active;
+                            active.hide(false);
+                        }
+
+                    }
+
+                    if (delay && this$1.delayShow) {
+                        this$1.showTimer = setTimeout(show, this$1.delayShow);
+                    } else {
+                        show();
+                    }
+
+                    active = this$1;
+                };
 
                 if (toggle && this.toggle && toggle.$el !== this.toggle.$el) {
 
@@ -4427,15 +4593,14 @@ var Drop = function (UIkit) {
                 css(this.$el, {top: '', left: '', display: 'block'});
                 toggleClass(this.$el, ((this.clsDrop) + "-boundary"), this.boundaryAlign);
 
-                var boundary = offset(this.boundary),
-                    alignTo = this.boundaryAlign ? boundary : offset(this.toggle.$el);
+                var boundary = offset(this.boundary);
+                var alignTo = this.boundaryAlign ? boundary : offset(this.toggle.$el);
 
                 if (this.align === 'justify') {
                     var prop = this.getAxis() === 'y' ? 'width' : 'height';
                     css(this.$el, prop, alignTo[prop]);
                 } else if (this.$el.offsetWidth > Math.max(boundary.right - alignTo.left, alignTo.right - boundary.left)) {
                     addClass(this.$el, ((this.clsDrop) + "-stack"));
-                    trigger(this.$el, 'stack', [this]);
                 }
 
                 this.positionAt(this.$el, this.boundaryAlign ? this.boundary : this.toggle.$el, this.boundary);
@@ -4521,8 +4686,24 @@ var FormCustom = function (UIkit) {
 
         },
 
-        connected: function connected() {
-            trigger(this.input, 'change');
+        update: function update() {
+
+            var ref = this;
+            var target = ref.target;
+            var input = ref.input;
+
+            if (!target) {
+                return;
+            }
+
+            var option;
+
+            target[isInput(target) ? 'value' : 'textContent'] = input.files && input.files[0]
+                ? input.files[0].name
+                : matches(input, 'select') && (option = $$('option', input).filter(function (el) { return el.selected; })[0])
+                    ? option.textContent
+                    : input.value;
+
         },
 
         events: [
@@ -4553,18 +4734,7 @@ var FormCustom = function (UIkit) {
                 name: 'change',
 
                 handler: function handler() {
-
-                    var target = this.target, input = this.input, option;
-
-                    if (!target) {
-                        return;
-                    }
-
-                    target[isInput(target) ? 'value' : 'textContent'] = input.files && input.files[0]
-                        ? input.files[0].name
-                        : matches(input, 'select') && (option = $$('option', input).filter(function (el) { return el.selected; })[0])
-                            ? option.textContent
-                            : input.value;
+                    this.$emit();
                 }
 
             }
@@ -4715,7 +4885,8 @@ var HeightMatch = function (UIkit) {
                     return {};
                 }
 
-                var max = 0, heights = [];
+                var heights = [];
+                var max = 0;
 
                 elements
                     .forEach(function (el) {
@@ -4775,7 +4946,8 @@ var HeightViewport = function (UIkit) {
 
                 css(this.$el, 'boxSizing', 'border-box');
 
-                var viewport = height(win), minHeight, offsetTop = 0;
+                var viewport = height(win);
+                var minHeight, offsetTop = 0;
 
                 if (this.expand) {
 
@@ -4789,7 +4961,8 @@ var HeightViewport = function (UIkit) {
 
                 } else {
 
-                    var top = offset(this.$el).top;
+                    var ref = offset(this.$el);
+                    var top = ref.top;
 
                     if (top < viewport / 2 && this.offsetTop) {
                         offsetTop += top;
@@ -4848,42 +5021,6 @@ var HeightViewport = function (UIkit) {
 
 };
 
-var Hover = function (UIkit) {
-
-    ready(function () {
-
-        if (!hasTouch) {
-            return;
-        }
-
-        var cls = 'uk-hover';
-
-        on(doc, 'tap', function (ref) {
-                var target = ref.target;
-
-                return $$(("." + cls)).forEach(function (_, el) { return !within(target, el) && removeClass(el, cls); }
-            );
-        }
-        );
-
-        Object.defineProperty(UIkit, 'hoverSelector', {
-
-            set: function set(selector) {
-                on(doc, 'tap', selector, function (ref) {
-                    var current = ref.current;
-
-                    return addClass(current, cls);
-                });
-            }
-
-        });
-
-        UIkit.hoverSelector = '.uk-animation-toggle, .uk-transition-toggle, [uk-hover]';
-
-    });
-
-};
-
 var closeIcon = "<svg width=\"14\" height=\"14\" viewBox=\"0 0 14 14\" xmlns=\"http://www.w3.org/2000/svg\"><line fill=\"none\" stroke=\"#000\" stroke-width=\"1.1\" x1=\"1\" y1=\"1\" x2=\"13\" y2=\"13\"/><line fill=\"none\" stroke=\"#000\" stroke-width=\"1.1\" x1=\"13\" y1=\"1\" x2=\"1\" y2=\"13\"/></svg>";
 
 var closeLarge = "<svg width=\"20\" height=\"20\" viewBox=\"0 0 20 20\" xmlns=\"http://www.w3.org/2000/svg\"><line fill=\"none\" stroke=\"#000\" stroke-width=\"1.4\" x1=\"1\" y1=\"1\" x2=\"19\" y2=\"19\"/><line fill=\"none\" stroke=\"#000\" stroke-width=\"1.4\" x1=\"19\" y1=\"1\" x2=\"1\" y2=\"19\"/></svg>";
@@ -4918,25 +5055,25 @@ var totop = "<svg width=\"18\" height=\"10\" viewBox=\"0 0 18 10\" xmlns=\"http:
 
 var Icon = function (UIkit) {
 
-    var parsed = {},
-        icons = {
-            spinner: spinner,
-            totop: totop,
-            marker: marker,
-            'close-icon': closeIcon,
-            'close-large': closeLarge,
-            'navbar-toggle-icon': navbarToggleIcon,
-            'overlay-icon': overlayIcon,
-            'pagination-next': paginationNext,
-            'pagination-previous': paginationPrevious,
-            'search-icon': searchIcon,
-            'search-large': searchLarge,
-            'search-navbar': searchNavbar,
-            'slidenav-next': slidenavNext,
-            'slidenav-next-large': slidenavNextLarge,
-            'slidenav-previous': slidenavPrevious,
-            'slidenav-previous-large': slidenavPreviousLarge
-        };
+    var parsed = {};
+    var icons = {
+        spinner: spinner,
+        totop: totop,
+        marker: marker,
+        'close-icon': closeIcon,
+        'close-large': closeLarge,
+        'navbar-toggle-icon': navbarToggleIcon,
+        'overlay-icon': overlayIcon,
+        'pagination-next': paginationNext,
+        'pagination-previous': paginationPrevious,
+        'search-icon': searchIcon,
+        'search-large': searchLarge,
+        'search-navbar': searchNavbar,
+        'slidenav-next': slidenavNext,
+        'slidenav-next-large': slidenavNextLarge,
+        'slidenav-previous': slidenavPrevious,
+        'slidenav-previous-large': slidenavPreviousLarge
+    };
 
     UIkit.component('icon', UIkit.components.svg.extend({
 
@@ -4967,10 +5104,10 @@ var Icon = function (UIkit) {
                 var icon = getIcon(this.icon);
 
                 if (!icon) {
-                    return Promise$$1.reject('Icon not found.');
+                    return Promise.reject('Icon not found.');
                 }
 
-                return Promise$$1.resolve(icon);
+                return Promise.resolve(icon);
             }
 
         }
@@ -5106,7 +5243,8 @@ var Leader = function (UIkit) {
         },
 
         connected: function connected() {
-            this.wrapper = wrapInner(this.$el, ("<span class=\"" + (this.clsWrapper) + "\">"))[0];
+            var assign;
+            (assign = wrapInner(this.$el, ("<span class=\"" + (this.clsWrapper) + "\">")), this.wrapper = assign[0]);
         },
 
         disconnected: function disconnected() {
@@ -5182,8 +5320,8 @@ var Margin = function (UIkit) {
 
                 for (var i = 0; i < items.length; i++) {
 
-                    var el = items[i],
-                        dim = el.getBoundingClientRect();
+                    var el = items[i];
+                    var dim = el.getBoundingClientRect();
 
                     if (!dim.height) {
                         continue;
@@ -5346,15 +5484,16 @@ var Modal$1 = function (UIkit) {
 
         var dialog = UIkit.modal((" <div class=\"uk-modal\"> <div class=\"uk-modal-dialog\">" + content + "</div> </div> "), options);
 
+        dialog.show();
+
         on(dialog.$el, 'hidden', function (ref) {
             var target = ref.target;
-            var current = ref.current;
+            var currentTarget = ref.currentTarget;
 
-            if (target === current) {
+            if (target === currentTarget) {
                 dialog.$destroy(true);
             }
         });
-        dialog.show();
 
         return dialog;
     };
@@ -5363,35 +5502,48 @@ var Modal$1 = function (UIkit) {
 
         options = assign({bgClose: false, escClose: false, labels: UIkit.modal.labels}, options);
 
-        return new Promise$$1(
+        return new Promise(
             function (resolve) { return on(UIkit.modal.dialog((" <div class=\"uk-modal-body\">" + (isString(message) ? message : html(message)) + "</div> <div class=\"uk-modal-footer uk-text-right\"> <button class=\"uk-button uk-button-primary uk-modal-close\" autofocus>" + (options.labels.ok) + "</button> </div> "), options).$el, 'hide', resolve); }
         );
     };
 
     UIkit.modal.confirm = function (message, options) {
 
-        options = assign({bgClose: false, escClose: false, labels: UIkit.modal.labels}, options);
+        options = assign({bgClose: false, escClose: true, labels: UIkit.modal.labels}, options);
 
-        return new Promise$$1(
-            function (resolve, reject) { return on(UIkit.modal.dialog((" <div class=\"uk-modal-body\">" + (isString(message) ? message : html(message)) + "</div> <div class=\"uk-modal-footer uk-text-right\"> <button class=\"uk-button uk-button-default uk-modal-close\">" + (options.labels.cancel) + "</button> <button class=\"uk-button uk-button-primary uk-modal-close\" autofocus>" + (options.labels.ok) + "</button> </div> "), options).$el, 'click', '.uk-modal-footer button', function (ref) {
-                var target = ref.target;
+        return new Promise(function (resolve, reject) {
 
-                return index(target) === 0 ? reject() : resolve();
-                }); }
-        );
+            var confirm = UIkit.modal.dialog((" <form> <div class=\"uk-modal-body\">" + (isString(message) ? message : html(message)) + "</div> <div class=\"uk-modal-footer uk-text-right\"> <button class=\"uk-button uk-button-default uk-modal-close\" type=\"button\">" + (options.labels.cancel) + "</button> <button class=\"uk-button uk-button-primary\" autofocus>" + (options.labels.ok) + "</button> </div> </form> "), options);
+
+            var resolved = false;
+
+            on(confirm.$el, 'submit', 'form', function (e) {
+                e.preventDefault();
+                resolve();
+                resolved = true;
+                confirm.hide();
+            });
+            on(confirm.$el, 'hide', function () {
+                if (!resolved) {
+                    reject();
+                }
+            });
+
+        });
     };
 
     UIkit.modal.prompt = function (message, value, options) {
 
-        options = assign({bgClose: false, escClose: false, labels: UIkit.modal.labels}, options);
+        options = assign({bgClose: false, escClose: true, labels: UIkit.modal.labels}, options);
 
-        return new Promise$$1(function (resolve) {
+        return new Promise(function (resolve) {
 
-            var resolved = false,
-                prompt = UIkit.modal.dialog((" <form class=\"uk-form-stacked\"> <div class=\"uk-modal-body\"> <label>" + (isString(message) ? message : html(message)) + "</label> <input class=\"uk-input\" autofocus> </div> <div class=\"uk-modal-footer uk-text-right\"> <button class=\"uk-button uk-button-default uk-modal-close\" type=\"button\">" + (options.labels.cancel) + "</button> <button class=\"uk-button uk-button-primary\">" + (options.labels.ok) + "</button> </div> </form> "), options),
+            var prompt = UIkit.modal.dialog((" <form class=\"uk-form-stacked\"> <div class=\"uk-modal-body\"> <label>" + (isString(message) ? message : html(message)) + "</label> <input class=\"uk-input\" autofocus> </div> <div class=\"uk-modal-footer uk-text-right\"> <button class=\"uk-button uk-button-default uk-modal-close\" type=\"button\">" + (options.labels.cancel) + "</button> <button class=\"uk-button uk-button-primary\">" + (options.labels.ok) + "</button> </div> </form> "), options),
                 input = $('input', prompt.$el);
 
             input.value = value;
+
+            var resolved = false;
 
             on(prompt.$el, 'submit', 'form', function (e) {
                 e.preventDefault();
@@ -5487,22 +5639,33 @@ var Navbar = function (UIkit) {
 
         },
 
-        ready: function ready() {
+        beforeConnect: function beforeConnect() {
+
+            var ref = this.$props;
+            var dropbar = ref.dropbar;
+
+            this.dropbar = dropbar && (isString(dropbar) && query(dropbar, this.$el) || $('<div></div>'));
 
             if (this.dropbar) {
-                UIkit.navbarDropbar(
-                    query(this.dropbar, this.$el) || after(this.dropbarAnchor || this.$el, '<div></div>'),
-                    {clsDrop: this.clsDrop, mode: this.dropbarMode, duration: this.duration, navbar: this}
-                );
+
+                addClass(this.dropbar, 'uk-navbar-dropbar');
+
+                if (this.dropbarMode === 'slide') {
+                    addClass(this.dropbar, 'uk-navbar-dropbar-slide');
+                }
             }
 
+        },
+
+        disconnected: function disconnected() {
+            this.dropbar && remove(this.dropbar);
         },
 
         update: function update() {
 
             UIkit.drop(
-                $$(((this.dropdown) + " ." + (this.clsDrop)), this.$el).filter(function (el) { return !UIkit.getComponent(el, 'dropdown'); }),
-                assign({}, this.$props, {boundary: this.boundary, pos: this.pos})
+                $$(((this.dropdown) + " ." + (this.clsDrop)), this.$el).filter(function (el) { return !UIkit.getComponent(el, 'drop') && !UIkit.getComponent(el, 'dropdown'); }),
+                assign({}, this.$props, {boundary: this.boundary, pos: this.pos, offset: this.dropbar || this.offset})
             );
 
         },
@@ -5525,93 +5688,75 @@ var Navbar = function (UIkit) {
                     }
                 }
 
-            }
-
-        ],
-
-        methods: {
-
-            getActive: function getActive() {
-                var active = UIkit.drop.getActive();
-                return active && includes(active.mode, 'hover') && within(active.toggle.$el, this.$el) && active;
-            }
-
-        }
-
-    });
-
-    UIkit.component('navbar-dropbar', {
-
-        mixins: [Class],
-
-        defaults: {
-            clsDrop: '',
-            mode: 'slide',
-            navbar: null,
-            duration: 200
-        },
-
-        init: function init() {
-
-            if (this.mode === 'slide') {
-                addClass(this.$el, 'uk-navbar-dropbar-slide');
-            }
-
-        },
-
-        events: [
-
-            {
-                name: 'beforeshow',
-
-                el: function el() {
-                    return this.navbar.$el;
-                },
-
-                handler: function handler(e, drop) {
-                    var $el = drop.$el;
-                    var dir = drop.dir;
-                    if (dir === 'bottom' && !within($el, this.$el)) {
-                        append(this.$el, $el);
-                        drop.show();
-                        e.preventDefault();
-                    }
-                }
             },
 
             {
                 name: 'mouseleave',
 
-                handler: function handler() {
-                    var active = this.navbar.getActive();
+                el: function el() {
+                    return this.dropbar;
+                },
 
-                    if (active && !matches(this.$el, ':hover')) {
+                handler: function handler() {
+                    var active = this.getActive();
+
+                    if (active && !matches(this.dropbar, ':hover')) {
                         active.hide();
                     }
                 }
             },
 
             {
+                name: 'beforeshow',
+
+                capture: true,
+
+                filter: function filter() {
+                    return this.dropbar;
+                },
+
+                handler: function handler() {
+
+                    if (!this.dropbar.parentNode) {
+                        after(this.dropbarAnchor || this.$el, this.dropbar);
+                    }
+
+                }
+            },
+
+            {
                 name: 'show',
 
-                handler: function handler(_, ref) {
-                    var $el = ref.$el;
+                capture: true,
+
+                filter: function filter() {
+                    return this.dropbar;
+                },
+
+                handler: function handler(_, drop) {
+
+                    var $el = drop.$el;
 
                     this.clsDrop && addClass($el, ((this.clsDrop) + "-dropbar"));
-                    this.transitionTo($el.offsetHeight + toFloat(css($el, 'margin-top')) + toFloat(css($el, 'margin-bottom')));
+
+                    this.transitionTo($el.offsetHeight + toFloat(css($el, 'margin-top')) + toFloat(css($el, 'margin-bottom')), $el);
                 }
             },
 
             {
                 name: 'beforehide',
 
+                filter: function filter() {
+                    return this.dropbar;
+                },
+
                 handler: function handler(e, ref) {
                     var $el = ref.$el;
 
 
-                    var active = this.navbar.getActive();
+                    var active = this.getActive();
 
-                    if (matches(this.$el, ':hover') && active && active.$el === $el) {
+                    if (matches(this.dropbar, ':hover') && active && active.$el === $el) {
                         e.preventDefault();
                     }
                 }
@@ -5620,11 +5765,15 @@ var Navbar = function (UIkit) {
             {
                 name: 'hide',
 
+                filter: function filter() {
+                    return this.dropbar;
+                },
+
                 handler: function handler(_, ref) {
                     var $el = ref.$el;
 
 
-                    var active = this.navbar.getActive();
+                    var active = this.getActive();
 
                     if (!active || active && active.$el === $el) {
                         this.transitionTo(0);
@@ -5636,10 +5785,27 @@ var Navbar = function (UIkit) {
 
         methods: {
 
-            transitionTo: function transitionTo(newHeight) {
-                height(this.$el, isVisible(this.$el) ? height(this.$el) : 0);
-                Transition.cancel(this.$el);
-                return Transition.start(this.$el, {height: newHeight}, this.duration).catch(noop);
+            getActive: function getActive() {
+                var active = UIkit.drop.getActive();
+                return active && includes(active.mode, 'hover') && within(active.toggle.$el, this.$el) && active;
+            },
+
+            transitionTo: function transitionTo(newHeight, el) {
+
+                var ref = this;
+                var dropbar = ref.dropbar;
+                var oldHeight = isVisible(dropbar) ? height(dropbar) : 0;
+
+                el = oldHeight < newHeight && el;
+
+                css(el, {height: oldHeight, overflow: 'hidden'});
+                height(dropbar, oldHeight);
+
+                Transition.cancel([el, dropbar]);
+                return Transition
+                    .start([el, dropbar], {height: newHeight}, this.duration)
+                    .catch(noop)
+                    .finally(function () { return css(el, {height: '', overflow: ''}); });
             }
 
         }
@@ -5945,10 +6111,10 @@ var Scroll = function (UIkit) {
 
                 el = el && $(el) || doc.body;
 
-                var target = offset(el).top - this.offset,
-                    docHeight = height(doc),
-                    winHeight = height(win);
+                var docHeight = height(doc);
+                var winHeight = height(win);
 
+                var target = offset(el).top - this.offset;
                 if (target + winHeight > docHeight) {
                     target = docHeight - winHeight;
                 }
@@ -5957,20 +6123,22 @@ var Scroll = function (UIkit) {
                     return;
                 }
 
-                var start = Date.now(),
-                    startY = win.pageYOffset,
-                    step = function () {
-                        var currentY = startY + (target - startY) * ease(clamp((Date.now() - start) / this$1.duration));
+                var start = Date.now();
+                var startY = win.pageYOffset;
+                var step = function () {
 
-                        win.scrollTo(win.pageXOffset, currentY);
+                    var currentY = startY + (target - startY) * ease(clamp((Date.now() - start) / this$1.duration));
 
-                        // scroll more if we have not reached our destination
-                        if (currentY !== target) {
-                            requestAnimationFrame$1(step);
-                        } else {
-                            trigger(this$1.$el, 'scrolled', [this$1, el]);
-                        }
-                    };
+                    win.scrollTo(win.pageXOffset, currentY);
+
+                    // scroll more if we have not reached our destination
+                    if (currentY !== target) {
+                        requestAnimationFrame(step);
+                    } else {
+                        trigger(this$1.$el, 'scrolled', [this$1, el]);
+                    }
+
+                };
 
                 step();
 
@@ -6017,7 +6185,7 @@ var Scrollspy = function (UIkit) {
         },
 
         defaults: {
-            cls: ['uk-scrollspy-inview'],
+            cls: [],
             target: false,
             hidden: true,
             offsetTop: 0,
@@ -6051,30 +6219,36 @@ var Scrollspy = function (UIkit) {
 
             {
 
-                read: function read(data) {
+                read: function read(els) {
                     var this$1 = this;
 
 
+                    // Let child components be applied at least once first
                     if (!UIkit._initialized) {
+
+                        if (doc.readyState === 'complete') {
+                            requestAnimationFrame(function () { return this$1.$emit(); });
+                        }
+
                         return false;
                     }
 
                     this.elements.forEach(function (el, i) {
 
-                        var elData = data[i];
+                        var elData = els[i];
 
-                        if (!elData) {
-                            var cls = attr(el, 'uk-scrollspy-class');
-                            elData = {toggles: cls && cls.split(',') || this$1.cls};
+                        if (!elData || elData.el !== el) {
+                            var cls = data(el, 'uk-scrollspy-class');
+                            elData = {el: el, toggles: cls && cls.split(',') || this$1.cls};
                         }
 
                         elData.show = isInView(el, this$1.offsetTop, this$1.offsetLeft);
-                        data[i] = elData;
+                        els[i] = elData;
 
                     });
                 },
 
-                write: function write(data) {
+                write: function write(els) {
                     var this$1 = this;
 
 
@@ -6082,57 +6256,51 @@ var Scrollspy = function (UIkit) {
 
                     this.elements.forEach(function (el, i) {
 
-                        var elData = data[i], cls = elData.toggles[i] || elData.toggles[0];
+                        var elData = els[i];
+                        var cls = elData.toggles[i] || elData.toggles[0];
 
-                        if (elData.show) {
+                        if (elData.show && !elData.inview && !elData.timer) {
 
-                            if (!elData.inview && !elData.timer) {
-
-                                var show = function () {
-                                    css(el, 'visibility', '');
-                                    addClass(el, this$1.inViewClass);
-                                    toggleClass(el, cls);
-
-                                    trigger(el, 'inview');
-
-                                    this$1.$update();
-
-                                    elData.inview = true;
-                                    delete elData.timer;
-                                };
-
-                                if (this$1.delay && index) {
-                                    elData.timer = setTimeout(show, this$1.delay * index);
-                                } else {
-                                    show();
-                                }
-
-                                index++;
-
-                            }
-
-                        } else {
-
-                            if (elData.inview && this$1.repeat) {
-
-                                if (elData.timer) {
-                                    clearTimeout(elData.timer);
-                                    delete elData.timer;
-                                }
-
-                                css(el, 'visibility', this$1.hidden ? 'hidden' : '');
-                                removeClass(el, this$1.inViewClass);
+                            var show = function () {
+                                css(el, 'visibility', '');
+                                addClass(el, this$1.inViewClass);
                                 toggleClass(el, cls);
 
-                                trigger(el, 'outview');
+                                trigger(el, 'inview');
 
-                                this$1.$update();
+                                UIkit.update(null, el);
 
-                                elData.inview = false;
+                                elData.inview = true;
+                                delete elData.timer;
+                            };
 
+                            if (this$1.delay && index) {
+                                elData.timer = setTimeout(show, this$1.delay * index);
+                            } else {
+                                show();
                             }
 
+                            index++;
+
+                        } else if (!elData.show && elData.inview && this$1.repeat) {
+
+                            if (elData.timer) {
+                                clearTimeout(elData.timer);
+                                delete elData.timer;
+                            }
+
+                            css(el, 'visibility', this$1.hidden ? 'hidden' : '');
+                            removeClass(el, this$1.inViewClass);
+                            toggleClass(el, cls);
+
+                            trigger(el, 'outview');
+
+                            UIkit.update(null, el);
+
+                            elData.inview = false;
+
                         }
+
 
                     });
 
@@ -6202,14 +6370,17 @@ var ScrollspyNav = function (UIkit) {
                     var this$1 = this;
 
 
-                    var scroll = win.pageYOffset + this.offset + 1,
-                        max = height(doc) - height(win) + this.offset;
+                    var scroll = win.pageYOffset + this.offset + 1;
+                    var max = height(doc) - height(win) + this.offset;
 
                     data.active = false;
 
                     this.targets.every(function (el, i) {
 
-                        var top = offset(el).top, last = i + 1 === this$1.targets.length;
+                        var ref = offset(el);
+                        var top = ref.top;
+                        var last = i + 1 === this$1.targets.length;
+
                         if (!this$1.overflow && (i === 0 && top > scroll || last && top + el.offsetTop < scroll)) {
                             return false;
                         }
@@ -6321,7 +6492,7 @@ var Sticky = function (UIkit) {
             if (this.isActive) {
                 this.isActive = false;
                 this.hide();
-                removeClass(this.$el, this.clsInactive);
+                removeClass(this.selTarget, this.clsInactive);
             }
 
             remove(this.placeholder);
@@ -6342,9 +6513,10 @@ var Sticky = function (UIkit) {
             if (target) {
                 fastdom.read(function () {
 
-                    var top = offset(target).top,
-                        elTop = offset(this$1.$el).top,
-                        elHeight = this$1.$el.offsetHeight;
+                    var ref = offset(target);
+                    var top = ref.top;
+                    var elTop = offset(this$1.$el).top;
+                    var elHeight = this$1.$el.offsetHeight;
 
                     if (elTop + elHeight >= top && elTop <= top + target.offsetHeight) {
                         win.scrollTo(0, top - elHeight - this$1.target - this$1.offset);
@@ -6386,11 +6558,10 @@ var Sticky = function (UIkit) {
             {
 
                 write: function write() {
-                    var this$1 = this;
 
-
-                    var placeholder = this.placeholder,
-                        outerHeight = (this.isActive ? placeholder : this.$el).offsetHeight, el;
+                    var ref = this;
+                    var placeholder = ref.placeholder;
+                    var outerHeight = (this.isActive ? placeholder : this.$el).offsetHeight;
 
                     css(placeholder, assign(
                         {height: css(this.$el, 'position') !== 'absolute' ? outerHeight : ''},
@@ -6409,38 +6580,10 @@ var Sticky = function (UIkit) {
                     this.topOffset = offset(this.isActive ? placeholder : this.$el).top;
                     this.bottomOffset = this.topOffset + outerHeight;
 
-                    ['top', 'bottom'].forEach(function (prop) {
+                    var bottom = parseProp('bottom', this);
 
-                        this$1[prop] = this$1.$props[prop];
-
-                        if (!this$1[prop]) {
-                            return;
-                        }
-
-                        if (isNumeric(this$1[prop])) {
-
-                            this$1[prop] = this$1[(prop + "Offset")] + toFloat(this$1[prop]);
-
-                        } else {
-
-                            if (isString(this$1[prop]) && this$1[prop].match(/^-?\d+vh$/)) {
-                                this$1[prop] = height(win) * toFloat(this$1[prop]) / 100;
-                            } else {
-
-                                el = this$1[prop] === true ? this$1.$el.parentNode : query(this$1[prop], this$1.$el);
-
-                                if (el) {
-                                    this$1[prop] = offset(el).top + el.offsetHeight;
-                                }
-
-                            }
-
-                        }
-
-                    });
-
-                    this.top = Math.max(toFloat(this.top), this.topOffset) - this.offset;
-                    this.bottom = this.bottom && this.bottom - outerHeight;
+                    this.top = Math.max(toFloat(parseProp('top', this)), this.topOffset) - this.offset;
+                    this.bottom = bottom && bottom - outerHeight;
                     this.inactive = this.media && !win.matchMedia(this.media).matches;
 
                     if (this.isActive) {
@@ -6537,7 +6680,8 @@ var Sticky = function (UIkit) {
 
             update: function update() {
 
-                var top = Math.max(0, this.offset), active = this.scroll > this.top;
+                var active = this.top !== 0 || this.scroll > this.top;
+                var top = Math.max(0, this.offset);
 
                 if (this.bottom && this.scroll > this.bottom - this.offset) {
                     top = this.bottom - this.scroll;
@@ -6555,11 +6699,8 @@ var Sticky = function (UIkit) {
                         trigger(this.$el, 'inactive');
                     }
 
-                } else {
-
-                    if (active) {
-                        trigger(this.$el, 'active');
-                    }
+                } else if (active) {
+                    trigger(this.$el, 'active');
                 }
 
                 toggleClass(this.$el, this.clsBelow, this.scroll > this.bottomOffset);
@@ -6570,6 +6711,37 @@ var Sticky = function (UIkit) {
         }
 
     });
+
+    function parseProp(prop, ref) {
+        var $props = ref.$props;
+        var $el = ref.$el;
+        var propOffset = ref[(prop + "Offset")];
+
+
+        var value = $props[prop];
+
+        if (!value) {
+            return;
+        }
+
+        if (isNumeric(value)) {
+
+            return propOffset + toFloat(value);
+
+        } else if (isString(value) && value.match(/^-?\d+vh$/)) {
+
+            return height(win) * toFloat(value) / 100;
+
+        } else {
+
+            var el = value === true ? $el.parentNode : query(value, $el);
+
+            if (el) {
+                return offset(el).top + el.offsetHeight;
+            }
+
+        }
+    }
 
 };
 
@@ -6612,8 +6784,8 @@ var Svg = function (UIkit) {
                 var parts = this.src.split('#');
 
                 if (parts.length > 1) {
-                    this.src = parts[0];
-                    this.icon = parts[1];
+                    var assign;
+                    (assign = parts, this.src = assign[0], this.icon = assign[1]);
                 }
             }
 
@@ -6634,7 +6806,7 @@ var Svg = function (UIkit) {
                 }
 
                 if (!el) {
-                    return Promise$$1.reject('SVG not found.');
+                    return Promise.reject('SVG not found.');
                 }
 
                 var dimensions = attr(el, 'viewBox');
@@ -6720,14 +6892,14 @@ var Svg = function (UIkit) {
 
 
                 if (!this.src) {
-                    return Promise$$1.reject();
+                    return Promise.reject();
                 }
 
                 if (svgs[this.src]) {
                     return svgs[this.src];
                 }
 
-                svgs[this.src] = new Promise$$1(function (resolve, reject) {
+                svgs[this.src] = new Promise(function (resolve, reject) {
 
                     if (startsWith(this$1.src, 'data:')) {
                         resolve(decodeURIComponent(this$1.src.split(',')[1]));
@@ -6750,8 +6922,8 @@ var Svg = function (UIkit) {
 
     });
 
-    var symbolRe = /<symbol(.*?id=(['"])(.*?)\2[^]*?<\/)symbol>/g,
-        symbols = {};
+    var symbolRe = /<symbol(.*?id=(['"])(.*?)\2[^]*?<\/)symbol>/g;
+    var symbols = {};
 
     function parseSymbols(svg, icon) {
 
@@ -6760,7 +6932,7 @@ var Svg = function (UIkit) {
             symbols[svg] = {};
 
             var match;
-            while (match = symbolRe.exec(svg)) {
+            while ((match = symbolRe.exec(svg))) {
                 symbols[svg][match[3]] = "<svg xmlns=\"http://www.w3.org/2000/svg\"" + (match[1]) + "svg>";
             }
 
@@ -6887,12 +7059,13 @@ var Switcher = function (UIkit) {
                 var this$1 = this;
 
 
-                var length = this.toggles.length,
-                    prev = !!this.connects.length && index(filter(this.connects[0].children, ("." + (this.cls)))[0]),
-                    hasPrev = prev >= 0,
-                    next = getIndex(item, this.toggles, prev),
-                    dir = item === 'previous' ? -1 : 1,
-                    toggle;
+                var ref = this.toggles;
+                var length = ref.length;
+                var prev = !!this.connects.length && index(filter(this.connects[0].children, ("." + (this.cls)))[0]);
+                var hasPrev = prev >= 0;
+                var dir = item === 'previous' ? -1 : 1;
+
+                var toggle, next = getIndex(item, this.toggles, prev);
 
                 for (var i = 0; i < length; i++, next = (next + dir + length) % length) {
                     if (!matches(this$1.toggles[next], '.uk-disabled, [disabled]')) {
@@ -7153,29 +7326,6 @@ var Video = function (UIkit) {
 
 var core = function (UIkit) {
 
-    var scroll = 0, started = 0;
-
-    on(win, 'load resize', UIkit.update);
-    on(win, 'scroll', function (e) {
-        e.dir = scroll <= win.pageYOffset ? 'down' : 'up';
-        e.scrollY = scroll = win.pageYOffset;
-        UIkit.update(e);
-    });
-
-    on(doc, 'animationstart', function (ref) {
-        var target = ref.target;
-
-        if ((css(target, 'animationName') || '').match(/^uk-.*(left|right)/)) {
-            started++;
-            doc.body.style.overflowX = 'hidden';
-            setTimeout(function () {
-                if (!--started) {
-                    doc.body.style.overflowX = '';
-                }
-            }, toMs(css(target, 'animationDuration')) + 100);
-        }
-    }, true);
-
     // core components
     UIkit.use(Toggle);
     UIkit.use(Accordion);
@@ -7187,7 +7337,6 @@ var core = function (UIkit) {
     UIkit.use(FormCustom);
     UIkit.use(HeightMatch);
     UIkit.use(HeightViewport);
-    UIkit.use(Hover);
     UIkit.use(Margin);
     UIkit.use(Gif);
     UIkit.use(Grid);
@@ -7205,6 +7354,9 @@ var core = function (UIkit) {
     UIkit.use(Icon);
     UIkit.use(Switcher);
     UIkit.use(Tab);
+
+    // core functionality
+    UIkit.use(Core);
 
 };
 
@@ -7252,15 +7404,14 @@ var boot = function (UIkit) {
 
     function applyMutation(mutation) {
 
-        var attributeName = mutation.attributeName;
         var target = mutation.target;
         var type = mutation.type;
 
         var update = type !== 'attributes'
             ? applyChildList(mutation)
-            : attributeName === 'href' || applyAttribute(mutation);
+            : applyAttribute(mutation);
 
-        update && UIkit.update(createEvent('update', true, false, {mutation: true}), target, true);
+        update && UIkit.update('update', target, true);
 
     }
 
@@ -7298,14 +7449,12 @@ var boot = function (UIkit) {
         var removedNodes = ref.removedNodes;
 
 
-        var i;
-
-        for (i = 0; i < addedNodes.length; i++) {
+        for (var i = 0; i < addedNodes.length; i++) {
             apply(addedNodes[i], connect);
         }
 
-        for (i = 0; i < removedNodes.length; i++) {
-            apply(removedNodes[i], disconnect);
+        for (var i$1 = 0; i$1 < removedNodes.length; i$1++) {
+            apply(removedNodes[i$1], disconnect);
         }
 
         return true;

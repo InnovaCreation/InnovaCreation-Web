@@ -6,15 +6,14 @@
 	(global.UIkitParallax = factory());
 }(this, (function () { 'use strict';
 
-function plugin(UIkit) {
+function plugin$2(UIkit) {
 
-    if (plugin.installed) {
+    if (plugin$2.installed) {
         return;
     }
 
     var mixin = UIkit.mixin;
     var util = UIkit.util;
-    var clamp = util.clamp;
     var css = util.css;
     var Dimensions = util.Dimensions;
     var each = util.each;
@@ -22,9 +21,7 @@ function plugin(UIkit) {
     var includes = util.includes;
     var isNumber = util.isNumber;
     var isUndefined = util.isUndefined;
-    var scrolledOver = util.scrolledOver;
     var toFloat = util.toFloat;
-    var query = util.query;
     var win = util.win;
 
     var props = ['x', 'y', 'bgx', 'bgy', 'rotate', 'scale', 'color', 'backgroundColor', 'borderColor', 'opacity', 'blur', 'hue', 'grayscale', 'invert', 'saturate', 'sepia', 'fopacity'];
@@ -57,10 +54,11 @@ function plugin(UIkit) {
                         return props;
                     }
 
-                    var isColor = prop.match(/color/i),
-                        isCssProp = isColor || prop === 'opacity',
-                        steps = properties[prop].slice(0),
-                        pos, bgPos, diff;
+                    var isColor = prop.match(/color/i);
+                    var isCssProp = isColor || prop === 'opacity';
+
+                    var pos, bgPos, diff;
+                    var steps = properties[prop].slice(0);
 
                     if (isCssProp) {
                         css($el, prop, '');
@@ -78,7 +76,8 @@ function plugin(UIkit) {
 
                     if (isColor) {
 
-                        var color = $el.style.color;
+                        var ref = $el.style;
+                        var color = ref.color;
                         steps = steps.map(function (step) { return parseColor($el, step); });
                         $el.style.color = color;
 
@@ -95,9 +94,9 @@ function plugin(UIkit) {
 
                         if (this$1.covers) {
 
-                            var min = Math.min.apply(Math, steps),
-                                max = Math.max.apply(Math, steps),
-                                down = steps.indexOf(min) < steps.indexOf(max);
+                            var min = Math.min.apply(Math, steps);
+                            var max = Math.max.apply(Math, steps);
+                            var down = steps.indexOf(min) < steps.indexOf(max);
 
                             diff = max - min;
 
@@ -142,8 +141,6 @@ function plugin(UIkit) {
                 read: function read(data) {
                     var this$1 = this;
 
-
-                    this._resetComputeds();
 
                     data.active = !this.media || win.matchMedia(this.media).matches;
 
@@ -192,8 +189,9 @@ function plugin(UIkit) {
                         return;
                     }
 
-                    var dimEl = image.dimEl,
-                        dim = Dimensions.cover(image, dimEl);
+                    var dimEl = image.dimEl;
+
+                    var dim = Dimensions.cover(image, dimEl);
 
                     this.bgProps.forEach(function (prop) {
 
@@ -201,8 +199,8 @@ function plugin(UIkit) {
                         var diff = ref.diff;
                         var bgPos = ref.bgPos;
                         var steps = ref.steps;
-                        var attr = prop === 'bgy' ? 'height' : 'width',
-                            span = dim[attr] - dimEl[attr];
+                        var attr = prop === 'bgy' ? 'height' : 'width';
+                        var span = dim[attr] - dimEl[attr];
 
                         if (!bgPos.match(/%$|0px/)) {
                             return;
@@ -212,10 +210,10 @@ function plugin(UIkit) {
                             dimEl[attr] = dim[attr] + diff - span;
                         } else if (span > diff) {
 
-                            bgPos = parseFloat(bgPos);
+                            var bgPosFloat = parseFloat(bgPos);
 
-                            if (bgPos) {
-                                this$1.props[prop].steps = steps.map(function (step) { return step - (span - diff) / (100 / bgPos); });
+                            if (bgPosFloat) {
+                                this$1.props[prop].steps = steps.map(function (step) { return step - (span - diff) / (100 / bgPosFloat); });
                             }
                         }
 
@@ -245,8 +243,9 @@ function plugin(UIkit) {
 
             getCss: function getCss(percent) {
 
-                var translated = false,
-                    props = this.props;
+                var ref = this;
+                var props = ref.props;
+                var translated = false;
 
                 return Object.keys(props).reduce(function (css, prop) {
 
@@ -337,6 +336,52 @@ function plugin(UIkit) {
 
     };
 
+    function parseColor(el, color) {
+        return css(css(el, 'color', color), 'color').split(/[(),]/g).slice(1, -1).concat(1).slice(0, 4).map(function (n) { return toFloat(n); });
+    }
+
+    function getStep(steps, percent) {
+        var count = steps.length - 1;
+        var index = Math.min(Math.floor(count * percent), count - 1);
+        var step = steps.slice(index, index + 2);
+
+        step.push(percent === 1 ? 1 : percent % (1 / count) * count);
+
+        return step;
+    }
+
+    function getValue(steps, percent) {
+        var ref = getStep(steps, percent);
+        var start = ref[0];
+        var end = ref[1];
+        var p = ref[2];
+        return (isNumber(start)
+            ? start + Math.abs(start - end) * p * (start < end ? 1 : -1)
+            : +end
+        ).toFixed(2);
+    }
+
+}
+
+if (!false && typeof window !== 'undefined' && window.UIkit) {
+    window.UIkit.use(plugin$2);
+}
+
+function plugin(UIkit) {
+
+    if (plugin.installed) {
+        return;
+    }
+
+    UIkit.use(plugin$2);
+
+    var mixin = UIkit.mixin;
+    var util = UIkit.util;
+    var clamp = util.clamp;
+    var css = util.css;
+    var scrolledOver = util.scrolledOver;
+    var query = util.query;
+
     UIkit.component('parallax', {
 
         mixins: [mixin.parallax],
@@ -407,31 +452,6 @@ function plugin(UIkit) {
 
     function ease(percent, easing) {
         return clamp(percent * (1 - (easing - easing * percent)));
-    }
-
-    function parseColor(el, color) {
-        return css(css(el, 'color', color), 'color').split(/[(),]/g).slice(1, -1).concat(1).slice(0, 4).map(function (n) { return toFloat(n); });
-    }
-
-    function getStep(steps, percent) {
-        var count = steps.length - 1,
-            index = Math.min(Math.floor(count * percent), count - 1),
-            step = steps.slice(index, index + 2);
-
-        step.push(percent === 1 ? 1 : percent % (1 / count) * count);
-
-        return step;
-    }
-
-    function getValue(steps, percent) {
-        var ref = getStep(steps, percent);
-        var start = ref[0];
-        var end = ref[1];
-        var p = ref[2];
-        return (isNumber(start)
-            ? start + Math.abs(start - end) * p * (start < end ? 1 : -1)
-            : +end
-        ).toFixed(2);
     }
 
 }

@@ -9,9 +9,6 @@
     <script src="dist/js/jquery.min.js"></script>
     <script src="dist/js/uikit.min.js"></script>
     <script src="dist/js/uikit-icons.min.js"></script>
-    <style>
-        @import url(//fonts.googleapis.com/earlyaccess/notosanssc.css);
-    </style>
 
     <!-- SEO -->
     <meta http-equiv="Cache-Control" content="no-siteapp" />
@@ -28,20 +25,24 @@
 </head>
 
 <body>
-    <div class="uk-background-cover ic-head-bg uk-panel uk-flex uk-flex-middle" style="background-image: url(dist/images/bg.png);">
-        <div class="ic-z uk-background-cover uk-panel uk-flex uk-flex-center uk-flex-middle uk-light" uk-cover>
-            <div class="uk-text-middle uk-text-center uk-padding">
-                <h1 class="uk-heading-primary">欢迎来到新式创筑</h1>
-                <p>我们是与众不同的团队，我们努力做到尽善尽美</p>
-            </div>
+    <!--<div class="uk-background-cover ic-head-bg uk-panel uk-flex uk-flex-middle uk-flex-center uk-background-blend-screen uk-background-secondary">-->
+    <div class="uk-cover-container uk-background-cover ic-head-bg">
+        <video autoplay loop muted playsinline uk-cover>
+            <source src="dist/bg.mp4" type="video/mp4">
+        </video>
+    </div>
+    <div class="uk-text-middle uk-text-center uk-padding uk-position-center uk-light" uk-scrollspy="cls: uk-animation-fade;delay: 500;repeat">
+        <h1 class="uk-heading-primary">欢迎来到新式创筑</h1>
+        <p>作为与众不同的团队，我们致力于创造身临其境的场景</p>
+    </div>
 
-            <div class="uk-text-center uk-animation-toggle uk-position-bottom-center">
-                <a href="#container" uk-scroll>
-                    <span class="uk-animation-slide-bottom-small" uk-icon="icon: chevron-down; ratio: 2" style="margin: 3em 0;">
-                    </span>
-                </a>
-            </div>
-        </div>
+    <div class="uk-text-center uk-animation-toggle uk-position-bottom-center uk-light">
+        <a href="#container" uk-scroll>
+            <span uk-icon="icon: chevron-down; ratio: 2" style="margin: 3em 0;">
+            </span>
+        </a>
+    </div>
+    </div>
 
 
 
@@ -136,28 +137,28 @@
 
     <div class="uk-column-1-2@s uk-column-divider uk-text-center">
         <div class="uk-padding-large">
-            <div class="uk-card uk-card-body uk-height-large">
+            <div class="uk-card uk-card-body uk-height-large" uk-scrollspy="cls:uk-animation-slide-bottom-small; delay: 500">
                 <img src="dist/images/test2.png">
                 <h3>文化学习</h3>
                 <p>
-                    展望未来，伦敦大火还原和一些有关 Minecraft 的展会，已经证明一个亲近于年轻人的，便于上手的工具，有效提升了文化历史在展示中的吸引力，并降低了其学习的成本。
+                    近来， 伦敦大火还原和一些有关 Minecraft 的展会，已证明 Minecraft 作为一个亲近年轻人的，便于上手的工具， 能有效提升历史文化内容在作品展示中的吸引力，并降低其学习的成本。
                 </p>
             </div>
         </div>
         <div class="uk-padding-large">
-            <div class="uk-card uk-card-body uk-height-large">
+            <div class="uk-card uk-card-body uk-height-large" uk-scrollspy="cls:uk-animation-slide-bottom-small; delay: 500">
                 <img src="dist/images/test.png">
                 <h3>工匠精神</h3>
                 <p>
-                    和对待艺术品一样，用心对待每一个 Minecraft作品的创作，从结构到外观，精细布置每一块细节，我们同时非常重视场景和规划的设计，力求展现让人身临其境的场景。
+                    和创作艺术品一样，我们用心创作每一个 Minecraft 作品， 从结构到外观，精细布置每一处细节， 同时也非常重视场景和规划的设计，力求让人拥有身临其境的体验。
                 </p>
             </div>
         </div>
     </div>
     </div>
 
-    <div class="uk-padding-large uk-background-secondary">
-        <div class="uk-position-relative uk-visible-toggle uk-light" uk-slideshow="animation: fade">
+    <div class="uk-padding-large uk-background-secondary uk-light">
+        <div class="uk-position-relative uk-visible-toggle" uk-slideshow="max-height: 500;animation: fade">
             <h1 class="uk-text-center uk-padding">独特的作品</h1>
             <ul class="uk-slideshow-items">
                 <li>
@@ -184,7 +185,7 @@
             <a class="uk-position-center-right uk-position-small uk-hidden-hover" href="#" uk-slidenav-next uk-slideshow-item="next"></a>
             <div class="uk-text-center uk-padding">
                 <a href="https://innovacreation.studio/news/tag/project/">
-                    <button class="uk-button uk-button-default">更多作品</button>
+                    <button class="uk-button uk-button-secondary">更多作品</button>
                 </a>
             </div>
 
@@ -193,37 +194,35 @@
 
     <div class="uk-padding-large uk-height-large">
         <h2 class="uk-heading-divider">
-            <span class="uk-padding-small" uk-icon="icon: users; ratio: 2"></span>加入对外交流
+            <span class="uk-padding-small" uk-icon="icon: comments; ratio: 2"></span>加入对外交流
         </h2>
-        <p>你已经期待已久了吧那就赶紧加入交流吧，丰富优美的地形世界期待着你的美妙建筑。</p>
+        <p>谈论世界文化，探讨建筑技巧，我们的交流随时欢迎他人的加入。</p>
 
-        <ul class="uk-navbar-nav">
-            <li>
-                <a href="https://jq.qq.com/?_wv=1027&k=4EBq7EZ" class="uk-padding-remove-left">
-                    <span class="uk-margin-small-right" uk-icon="icon: link">QQ 群组</span>
-                </a>
-            </li>
-            <li>
-                <a href="https://discord.gg/PJRET99" class="uk-padding-remove-left">
-                    <span class="uk-margin-small-right" uk-icon="icon: link">Discord 频道</span>
-                </a>
-            </li>
-        </ul>
+        <div class="uk-padding-small"></div>
+
+        <div class="uk-button-group">
+            <a href="https://shang.qq.com/wpa/qunwpa?idkey=f829f98f4685edfd1858f8a5941ccb3c81315545e6b5d4bce1ce85ab968334d5" class="uk-button uk-button-default uk-button-large">
+                QQ 群组
+            </a>
+            <a href="https://discord.gg/PJRET99" class="uk-button uk-button-default uk-button-large">
+                Discord 频道
+            </a>
+        </div>
     </div>
 
-    <div class="uk-padding-large uk-height uk-light uk-text-center" style="background: red;">
+    <div class="uk-padding-large uk-height uk-light uk-text-center uk-background-blend-overlay uk-background-secondary" style="background-image: url(https://i.loli.net/2018/03/04/5a9b9373c4382.png);">
         <h2>
             加入团队
         </h2>
-        <p>如果你有足够的信心，和学习的能力那么欢迎加入我们</p>
+        <p>如果你有足够的信心想加入我们，那么，请先了解这些。</p>
         <a href="about.html">
-            <button class="uk-button uk-button-text">申请加入</button>
+            <button class="uk-button uk-button-default">了解我们</button>
         </a>
     </div>
 
 
 
-    <div class="uk-background-muted">
+    <div class="uk-background-default">
         <footer class="uk-padding uk-text-center">
             <small>Copyright © 2016-2018 Innova Creation</small>
         </footer>

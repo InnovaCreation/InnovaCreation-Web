@@ -16,6 +16,7 @@ function plugin(UIkit) {
     var addClass = ref.addClass;
     var css = ref.css;
     var scrolledOver = ref.scrolledOver;
+    var sortBy = ref.sortBy;
     var toFloat = ref.toFloat;
 
     UIkit.component('grid-parallax', UIkit.components.grid.extend({
@@ -109,7 +110,7 @@ function plugin(UIkit) {
 
     }));
 
-    UIkit.component('grid-parallax').options.update.unshift({
+    UIkit.components.gridParallax.options.update.unshift({
 
         read: function read() {
             this.reset();
@@ -118,15 +119,6 @@ function plugin(UIkit) {
         events: ['load', 'resize']
 
     });
-
-    function sortBy(collection, prop) {
-        return collection.sort(function (a, b) { return a[prop] > b[prop]
-                ? 1
-                : b[prop] > a[prop]
-                    ? -1
-                    : 0; }
-        );
-    }
 
 }
 
