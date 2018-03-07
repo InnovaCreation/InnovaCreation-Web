@@ -138,7 +138,7 @@
     <div class="uk-column-1-2@s uk-column-divider uk-text-center">
         <div class="uk-padding-large">
             <div class="uk-card uk-card-body uk-height-large" uk-scrollspy="cls:uk-animation-slide-bottom-small; delay: 500">
-                <img src="dist/images/test2.png">
+                <img src="dist/images/test2.png" width="280px">
                 <h3>文化学习</h3>
                 <p>
                     近来， 伦敦大火还原和一些有关 Minecraft 的展会，已证明 Minecraft 作为一个亲近年轻人的，便于上手的工具， 能有效提升历史文化内容在作品展示中的吸引力，并降低其学习的成本。
@@ -147,7 +147,7 @@
         </div>
         <div class="uk-padding-large">
             <div class="uk-card uk-card-body uk-height-large" uk-scrollspy="cls:uk-animation-slide-bottom-small; delay: 500">
-                <img src="dist/images/test.png">
+                <img src="dist/images/test.png" width="280px">
                 <h3>工匠精神</h3>
                 <p>
                     和创作艺术品一样，我们用心创作每一个 Minecraft 作品， 从结构到外观，精细布置每一处细节， 同时也非常重视场景和规划的设计，力求让人拥有身临其境的体验。
@@ -155,34 +155,31 @@
             </div>
         </div>
     </div>
-    </div>
 
-    <div class="uk-padding-large uk-background-secondary uk-light">
-        <div class="uk-position-relative uk-visible-toggle" uk-slideshow="max-height: 500;animation: fade">
+    <div class="uk-padding-large uk-background-muted">
+        <div class="uk-position-relative uk-visible-toggle" uk-slider>
             <h1 class="uk-text-center uk-padding">独特的作品</h1>
-            <ul class="uk-slideshow-items">
-                <li>
-                    <img src="https://i.loli.net/2017/12/30/5a466f010296d.png" alt="" uk-cover>
-                    <div class="uk-overlay uk-overlay-primary uk-position-bottom uk-text-center uk-transition-slide-bottom">
-                        <p class="uk-margin-remove">在明清时期，华夏大地上的劳动人民对于宗教神灵的崇拜达到了一个高峰 ......</p>
-                    </div>
+            <ul class="uk-slider-items uk-grid">
+                <li class="uk-width-3-4">
+                    <img src="https://i.loli.net/2017/12/30/5a466f010296d.png" alt="">
                 </li>
-                <li>
-                    <img src="https://i.loli.net/2017/07/27/5978c0ce8c33c.png" alt="" uk-cover>
-                    <div class="uk-overlay uk-overlay-primary uk-position-bottom uk-text-center uk-transition-slide-bottom">
-                        <p class="uk-margin-remove">Schetopia 位于瑞士东北部，是一个雪山下的旅游小镇，一栋栋经典的瑞士风格小木屋树立其中 ......</p>
-                    </div>
+                <li class="uk-width-3-4">
+                    <img src="https://i.loli.net/2017/07/27/5978c0ce8c33c.png" alt="">
                 </li>
-                <li>
-                    <img src="https://i.loli.net/2017/08/19/5997a0928ac5a.jpg" alt="" uk-cover>
-                    <div class="uk-overlay uk-overlay-primary uk-position-bottom uk-text-center uk-transition-slide-bottom">
-                        <p class="uk-margin-remove">色泽之城的灵感来源于镜之边缘，但镜之边缘的整体色调偏白了，而色泽之城的色调则非常丰富 ......</p>
-                    </div>
+                <li class="uk-width-3-4">
+                    <img src="https://i.loli.net/2017/08/19/5997a0928ac5a.jpg" alt="">
+                </li>
+                <li class="uk-width-3-4">
+                    <img src="https://i.loli.net/2017/07/27/5978c0ce8c33c.png" alt="">
+                </li>
+                <li class="uk-width-3-4">
+                    <img src="https://i.loli.net/2017/08/19/5997a0928ac5a.jpg" alt="">
                 </li>
             </ul>
 
-            <a class="uk-position-center-left uk-position-small uk-hidden-hover" href="#" uk-slidenav-previous uk-slideshow-item="previous"></a>
-            <a class="uk-position-center-right uk-position-small uk-hidden-hover" href="#" uk-slidenav-next uk-slideshow-item="next"></a>
+            <a class="uk-position-center-left uk-position-small uk-hidden-hover" href="#" uk-slidenav-previous uk-slider-item="previous"></a>
+            <a class="uk-position-center-right uk-position-small uk-hidden-hover" href="#" uk-slidenav-next uk-slider-item="next"></a>
+
             <div class="uk-text-center uk-padding">
                 <a href="https://innovacreation.studio/news/tag/project/">
                     <button class="uk-button uk-button-secondary">更多作品</button>
@@ -212,9 +209,14 @@
 
     <div class="uk-padding-large uk-height uk-light uk-text-center uk-background-blend-overlay uk-background-secondary" style="background-image: url(https://i.loli.net/2018/03/04/5a9b9373c4382.png);">
         <h2>
-            加入团队
+            关注 / 加入团队
         </h2>
-        <p>如果你有足够的信心想加入我们，那么，请先了解这些。</p>
+        <p>如果想关注我们，或者你有足够的信心想加入我们，那么，请先了解这些。</p>
+        <p>
+            <a href="https://twitter.com/mc_dragonwork" class="uk-padding-xlarge" uk-icon="icon: twitter; ratio: 1.5"></a>
+            <a href="https://github.com/InnovaCreation" class="uk-padding-small" uk-icon="icon: github; ratio: 1.5"></a>
+            <a href="http://space.bilibili.com/102811746#!/" class="uk-padding-xlarge" uk-icon="icon: video-camera; ratio: 1.5"></a>
+        </p>
         <a href="about.html">
             <button class="uk-button uk-button-default">了解我们</button>
         </a>
@@ -222,7 +224,7 @@
 
 
 
-    <div class="uk-background-default">
+    <div class="uk-background-muted">
         <footer class="uk-padding uk-text-center">
             <small>Copyright © 2016-2018 Innova Creation</small>
         </footer>
